@@ -2418,10 +2418,8 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
 
   // code/src/move.js
   var SPEED = 480;
-  function setMoveAction(player, run_action) {
+  function setMoveAction(player) {
     kaboom_default2.action(() => {
-      if (!run_action)
-        return;
       if (kaboom_default2.keyIsDown("left")) {
         if (player.pos.x > 10) {
           player.move(-SPEED, 0);
@@ -2456,7 +2454,7 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
     border_map();
     const player = getPlayer("currant");
     spawnFood();
-    setMoveAction(player, true);
+    setMoveAction(player);
     player.collides("food", (food) => {
       destroy(food);
     });

@@ -2,9 +2,8 @@ import k from "./../kaboom";
 
 const SPEED = 480;
 
-export function setMoveAction(player, run_action) {
+export function setMoveAction(player) {
   k.action(() => {
-    if (!run_action) return;
 
     if (k.keyIsDown("left")) {
       if (player.pos.x > 10) {
