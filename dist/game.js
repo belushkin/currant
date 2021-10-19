@@ -2357,7 +2357,7 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
   });
   var kaboom_default2 = k;
 
-  // code/map.js
+  // code/src/map.js
   var block_size = 10;
   function border_map() {
     kaboom_default2.addLevel([
@@ -2389,7 +2389,7 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
   }
   __name(border_map, "border_map");
 
-  // code/food.js
+  // code/src/food.js
   function spawnFood() {
     add([
       rect(18, rand(12, 26)),
@@ -2403,7 +2403,7 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
   }
   __name(spawnFood, "spawnFood");
 
-  // code/player.js
+  // code/src/player.js
   function getPlayer(tag) {
     const player = kaboom_default2.add([
       rect(20, 20),
@@ -2416,35 +2416,33 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
   }
   __name(getPlayer, "getPlayer");
 
-  // code/main.js
+  // code/src/move.js
   var SPEED = 480;
-  kaboom_default2.scene("game", () => {
-    border_map();
-    const currant = getPlayer("currant");
-    let current_direction = null;
-    const directions = {
-      UP: "up",
-      DOWN: "down",
-      LEFT: "left",
-      RIGHT: "right"
-    };
-    spawnFood();
-    action(() => {
-      if (keyIsDown("left")) {
-        current_direction = directions.UP;
-        currant.move(-SPEED, 0);
+  function setMoveAction(player) {
+    kaboom_default2.action(() => {
+      if (kaboom_default2.keyIsDown("left")) {
+        player.move(-SPEED, 0);
       }
-      if (keyIsDown("right")) {
-        currant.move(SPEED, 0);
+      if (kaboom_default2.keyIsDown("right")) {
+        player.move(SPEED, 0);
       }
-      if (keyIsDown("down")) {
-        currant.move(0, SPEED);
+      if (kaboom_default2.keyIsDown("down")) {
+        player.move(0, SPEED);
       }
-      if (keyIsDown("up")) {
-        currant.move(0, -SPEED);
+      if (kaboom_default2.keyIsDown("up")) {
+        player.move(0, -SPEED);
       }
     });
-    currant.collides("food", (food) => {
+  }
+  __name(setMoveAction, "setMoveAction");
+
+  // code/main.js
+  kaboom_default2.scene("game", () => {
+    border_map();
+    const player = getPlayer("currant");
+    spawnFood();
+    setMoveAction(player);
+    player.collides("food", (food) => {
       destroy(food);
     });
   });

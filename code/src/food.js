@@ -1,4 +1,4 @@
-import k from './kaboom'
+import k from './../kaboom'
 
 export default function spawnFood() {
   // add food obj

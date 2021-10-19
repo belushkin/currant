@@ -1,9 +1,8 @@
 import k from './kaboom'
-import {border_map} from './map'
-import spawnFood from './food'
-import getPlayer from './player'
-
-const SPEED = 480;
+import {border_map} from './src/map'
+import spawnFood from './src/food'
+import getPlayer from './src/player'
+import {setMoveAction} from './src/move'
 
 k.scene("game", () => {
 
@@ -11,40 +10,15 @@ k.scene("game", () => {
   border_map();
   
   // Init player
-  const currant = getPlayer('currant');
-  let current_direction = null;
-
-  const directions = {
-    UP: "up",
-    DOWN: "down",
-    LEFT: "left",
-    RIGHT: "right"
-  };
+  const player = getPlayer('currant');
 
   // start spawning foods
 	spawnFood();
 
-  // jump when user press space
-	// keyPress("left", moveLeft);
-  // keyPress("right", moveRight);
+  // move
+  setMoveAction(player);
 
-  action(() => {
-      if (keyIsDown("left")) {
-          current_direction = directions.UP;
-          currant.move(-SPEED, 0);
-      }
-      if (keyIsDown("right")) {
-          currant.move(SPEED, 0);
-      }
-      if (keyIsDown("down")) {
-          currant.move(0, SPEED);
-      }
-      if (keyIsDown("up")) {
-          currant.move(0, -SPEED);
-      }
-  });
-
-  currant.collides("food", (food) => {
+  player.collides("food", (food) => {
       destroy(food);
   });
 

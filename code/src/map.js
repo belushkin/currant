@@ -1,4 +1,4 @@
-import k from './kaboom'
+import k from './../kaboom'
 
 const block_size = 10;
 
