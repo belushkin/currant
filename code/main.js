@@ -15,12 +15,19 @@ k.scene("game", () => {
   spawnFood();
 
   // move
-  setMoveAction(player);
+  setMoveAction(player, true);
 
   player.collides("food", (food) => {
     destroy(food);
   });
 
+  // player.collides("wall", (food) => {
+  //   shake(12);
+  // });
+// collides("currant", "wall", (s, w) => {
+//       run_action = false;
+//       shake(12);
+// });
   // action(() => {
   //   camPos(vec2(0, 100));
   // });

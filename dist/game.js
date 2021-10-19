@@ -2418,13 +2418,19 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
 
   // code/src/move.js
   var SPEED = 480;
-  function setMoveAction(player) {
+  function setMoveAction(player, run_action) {
     kaboom_default2.action(() => {
+      if (!run_action)
+        return;
       if (kaboom_default2.keyIsDown("left")) {
-        player.move(-SPEED, 0);
+        if (player.pos.x > 10) {
+          player.move(-SPEED, 0);
+        }
       }
       if (kaboom_default2.keyIsDown("right")) {
-        player.move(SPEED, 0);
+        if (player.pos.x < 290) {
+          player.move(SPEED, 0);
+        }
       }
       if (kaboom_default2.keyIsDown("down")) {
         player.move(0, SPEED);
@@ -2432,6 +2438,15 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
       if (kaboom_default2.keyIsDown("up")) {
         player.move(0, -SPEED);
       }
+      if (player.pos.x > 150) {
+        camPos(player.pos);
+      }
+      if (player.pos.x < 150) {
+        camPos(player.pos);
+      }
+    });
+    player.collides("wall", (food) => {
+      shake(12);
     });
   }
   __name(setMoveAction, "setMoveAction");
@@ -2441,7 +2456,7 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
     border_map();
     const player = getPlayer("currant");
     spawnFood();
-    setMoveAction(player);
+    setMoveAction(player, true);
     player.collides("food", (food) => {
       destroy(food);
     });
