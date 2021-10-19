@@ -1,15 +1,58 @@
-import kaboom from "kaboom";
+import k from './kaboom'
+import {border_map} from './map'
+import spawnFood from './food'
+import getPlayer from './player'
 
-// initialize context
-kaboom();
+const SPEED = 480;
 
-// load assets
-loadSprite("bean", "sprites/bean.png");
+k.scene("game", () => {
 
-// add a character to screen
-add([
-	// list of components
-	sprite("bean"),
-	pos(80, 40),
-	area(),
-]);
+  // Draw borders
+  border_map();
+  
+  // Init player
+  const currant = getPlayer('currant');
+  let current_direction = null;
+
+  const directions = {
+    UP: "up",
+    DOWN: "down",
+    LEFT: "left",
+    RIGHT: "right"
+  };
+
+  // start spawning foods
+	spawnFood();
+
+  // jump when user press space
+	// keyPress("left", moveLeft);
+  // keyPress("right", moveRight);
+
+  action(() => {
+      if (keyIsDown("left")) {
+          current_direction = directions.UP;
+          currant.move(-SPEED, 0);
+      }
+      if (keyIsDown("right")) {
+          currant.move(SPEED, 0);
+      }
+      if (keyIsDown("down")) {
+          currant.move(0, SPEED);
+      }
+      if (keyIsDown("up")) {
+          currant.move(0, -SPEED);
+      }
+  });
+
+  currant.collides("food", (food) => {
+      destroy(food);
+  });
+
+  // action(() => {
+  //   camPos(vec2(0, 100));
+  // });
+
+});
+
+
+go("game");
