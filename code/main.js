@@ -11,7 +11,13 @@ import PlayerModel from "./src/playerModel";
 const mp = new Multiplayer()
 k.scene("game", () => {
   // Draw borders
-  border_map();
+  // border_map();
+  let score = 0;
+  const scoreLabel = add([
+      text(score, 2),
+      pos(12, 12),
+      fixed(),
+  ]);
 
   // Init player
   const player = getPlayer("currant");
@@ -23,9 +29,17 @@ k.scene("game", () => {
 
   // move
   setMoveAction(playedModel);
+  // make the layer move by mouse
+  // mouseDown(() => {
+  //   player.pos = mousePos();
+  // })
 
   player.collides("food", (food) => {
     destroy(food);
+    score += 1;
+    scoreLabel.text = score;
+    addKaboom(player.pos);
+    player.biggify(0.5);
   });
 
 });

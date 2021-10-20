@@ -1,13 +1,13 @@
 import k from "./../kaboom";
 
+loadSprite("apple", "sprites/apple.png");
+
 export default function spawnFood() {
   // add food obj
   add([
-    rect(18, rand(12, 26)),
+    sprite("apple"),
     area(),
-    outline(1),
     pos(rand(0, width()), rand(0, height())),
-    color(255, 180, 255),
     "food",
   ]);
 
