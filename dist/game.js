@@ -10459,7 +10459,7 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
       color(255, 180, 255),
       "food"
     ]);
-    wait(rand(0.1, 1.5), spawnFood);
+    wait(rand(0.5, 1.5), spawnFood);
   }
   __name(spawnFood, "spawnFood");
 
@@ -10470,44 +10470,12 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
       pos(80, 40),
       color(0, 0, 255),
       area(),
+      move(0, 0),
       tag
     ]);
     return player;
   }
   __name(getPlayer, "getPlayer");
-
-  // code/src/move.js
-  var SPEED = 480;
-  function setMoveAction(player) {
-    kaboom_default2.action(() => {
-      if (kaboom_default2.keyIsDown("left")) {
-        if (player.pos.x > 10) {
-          player.move(-SPEED, 0);
-        }
-      }
-      if (kaboom_default2.keyIsDown("right")) {
-        if (player.pos.x < 290) {
-          player.move(SPEED, 0);
-        }
-      }
-      if (kaboom_default2.keyIsDown("down")) {
-        player.move(0, SPEED);
-      }
-      if (kaboom_default2.keyIsDown("up")) {
-        player.move(0, -SPEED);
-      }
-      if (player.pos.x > 150) {
-        camPos(player.pos);
-      }
-      if (player.pos.x < 150) {
-        camPos(player.pos);
-      }
-    });
-    player.collides("wall", (food) => {
-      shake(12);
-    });
-  }
-  __name(setMoveAction, "setMoveAction");
 
   // code/src/multiplayer.ts
   var import_chance = __toModule(require_chance());
@@ -10538,13 +10506,45 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
   };
   __name(Multiplayer, "Multiplayer");
 
+  // code/src/playerModel.ts
+  var PlayerModel = class {
+    constructor(x, y, player) {
+      this.move = vec2(0, 0);
+      this.pos = vec2(x, y);
+      this.gameObject = player;
+      this.setPosition(x, y);
+      this.setMove(0, 0);
+    }
+    setPosition(x, y) {
+      this.pos.x = x;
+      this.pos.y = y;
+      this.gameObject.moveTo(this.pos.x, this.pos.y);
+    }
+    setMove(angle, speed) {
+      if (this.moveCanceler != void 0) {
+        this.moveCanceler();
+        console.log("stopping");
+      }
+      this.move.x = angle;
+      this.move.y = speed;
+      this.moveCanceler = this.gameObject.action(() => {
+        this.gameObject.move(dir(angle).scale(speed));
+      });
+    }
+    stop() {
+      this.setMove(this.move.x, 0);
+    }
+  };
+  __name(PlayerModel, "PlayerModel");
+
   // code/main.js
   var mp = new Multiplayer();
   kaboom_default2.scene("game", () => {
     border_map();
     const player = getPlayer("currant");
+    const playedModel = new PlayerModel(80, 40, player);
+    window.p1 = playedModel;
     spawnFood();
-    setMoveAction(player);
     player.collides("food", (food) => {
       destroy(food);
     });
