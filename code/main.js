@@ -2,7 +2,9 @@ import k from "./kaboom";
 import { border_map } from "./src/map";
 import spawnFood from "./src/food";
 import getPlayer from "./src/player";
-import { setMoveAction } from "./src/move";
+// import { setMoveAction } from "./src/move";
+import { setMoveAction } from "./src/moveModel";
+
 import Multiplayer from "./src/multiplayer"
 import PlayerModel from "./src/playerModel";
 
@@ -20,7 +22,7 @@ k.scene("game", () => {
   spawnFood();
 
   // move
-//  setMoveAction(player);
+  setMoveAction(playedModel);
 
   player.collides("food", (food) => {
     destroy(food);

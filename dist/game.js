@@ -10477,6 +10477,25 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
   }
   __name(getPlayer, "getPlayer");
 
+  // code/src/moveModel.ts
+  function setMoveAction(playerModel) {
+    kaboom_default2.action(() => {
+      if (kaboom_default2.keyIsDown("left")) {
+        playerModel.setMove(180);
+      } else if (kaboom_default2.keyIsDown("right")) {
+        playerModel.setMove(0);
+      } else if (kaboom_default2.keyIsDown("down")) {
+        playerModel.setMove(90);
+      } else if (kaboom_default2.keyIsDown("up")) {
+        playerModel.setMove(270);
+      } else {
+        playerModel.stop();
+      }
+      camPos(playerModel.getPos());
+    });
+  }
+  __name(setMoveAction, "setMoveAction");
+
   // code/src/multiplayer.ts
   var import_chance = __toModule(require_chance());
   var Multiplayer = class {
@@ -10489,6 +10508,11 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
       console.log("Connecting to ws", url);
       this.ws = new WebSocket(url);
       this.ws.onopen = this.onOpen.bind(this);
+      this.ws.onmessage = this.onMessage.bind(this);
+    }
+    onMessage(event) {
+      const payload = JSON.parse(event.data);
+      console.log("RCV", payload);
     }
     onOpen(event) {
       this.join(this.name);
@@ -10509,6 +10533,7 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
   // code/src/playerModel.ts
   var PlayerModel = class {
     constructor(x, y, player) {
+      this.speed = 480;
       this.move = vec2(0, 0);
       this.pos = vec2(x, y);
       this.gameObject = player;
@@ -10520,10 +10545,9 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
       this.pos.y = y;
       this.gameObject.moveTo(this.pos.x, this.pos.y);
     }
-    setMove(angle, speed) {
+    setMove(angle, speed = 480) {
       if (this.moveCanceler != void 0) {
         this.moveCanceler();
-        console.log("stopping");
       }
       this.move.x = angle;
       this.move.y = speed;
@@ -10533,6 +10557,9 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
     }
     stop() {
       this.setMove(this.move.x, 0);
+    }
+    getPos() {
+      return this.gameObject.pos;
     }
   };
   __name(PlayerModel, "PlayerModel");
@@ -10545,6 +10572,7 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
     const playedModel = new PlayerModel(80, 40, player);
     window.p1 = playedModel;
     spawnFood();
+    setMoveAction(playedModel);
     player.collides("food", (food) => {
       destroy(food);
     });

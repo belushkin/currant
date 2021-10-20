@@ -13,6 +13,12 @@ module.exports = (server) => {
 		console.log(`New connection ${uuid}`);
 		let name = '';
 
+		send({
+			commandName: "connected",
+			user: uuid
+		});
+
+
 		//TODO: Setup keep alive 
 
 		function broadcast(data) {
@@ -21,6 +27,10 @@ module.exports = (server) => {
 					client.send(JSON.stringify(data));
 				}
 			});
+		}
+
+		function send(data) {
+			conn.send(JSON.stringify(data));
 		}
 
 		conn.on("message", (data) => {

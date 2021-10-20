@@ -4,6 +4,7 @@ export default class PlayerModel {
   private move: Vec2;
   private pos: Vec2;
   private gameObject: Character;
+  public readonly speed = 480;
 
   private moveCanceler: EventCanceller;
 
@@ -22,11 +23,10 @@ export default class PlayerModel {
     this.gameObject.moveTo(this.pos.x, this.pos.y);
   }
 
-  public setMove(angle: number, speed: number): void
+  public setMove(angle: number, speed: number = 480): void
   {
     if (this.moveCanceler != undefined) { 
       this.moveCanceler();
-      console.log('stopping');
     }
     this.move.x = angle;
     this.move.y = speed;
@@ -40,5 +40,9 @@ export default class PlayerModel {
     this.setMove(this.move.x, 0);
   }
 
-
+  public getPos(): Vec2
+  {
+    return this.gameObject.pos;
+  }
 }
+

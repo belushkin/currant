@@ -1,7 +1,13 @@
 import Chance from "chance"
+import PlayerModel from "./playerModel"
 
 export default class Multiplayer {
   ws: WebSocket
+  
+  // Our uuid
+  uuid: string
+
+  players: Map<string, PlayerModel>
 
   name: string
 
@@ -14,8 +20,17 @@ export default class Multiplayer {
     console.log("Connecting to ws" , url);
     this.ws = new WebSocket(url)
     this.ws.onopen = this.onOpen.bind(this);
-    
-    
+    this.ws.onmessage = this.onMessage.bind(this);
+  }
+
+  onMessage(event) {
+    const payload = JSON.parse(event.data)
+    console.log('RCV', payload);
+  }
+
+  private handleConnected(cmd): void
+  {
+
   }
 
   onOpen(event) {
