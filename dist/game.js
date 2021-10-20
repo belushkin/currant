@@ -8468,8 +8468,8 @@
   __name(Xe, "Xe");
   function Yt(e, r) {
     let t = (() => {
-      var z;
-      let l = P(Ut, bt), y = x(new ImageData(new Uint8ClampedArray([255, 255, 255, 255]), 1, 1)), g = (z = r.background) != null ? z : H(0, 0, 0);
+      var z2;
+      let l = P(Ut, bt), y = x(new ImageData(new Uint8ClampedArray([255, 255, 255, 255]), 1, 1)), g = (z2 = r.background) != null ? z2 : H(0, 0, 0);
       e.clearColor(g.r / 255, g.g / 255, g.b / 255, 1), e.enable(e.BLEND), e.enable(e.SCISSOR_TEST), e.blendFuncSeparate(e.SRC_ALPHA, e.ONE_MINUS_SRC_ALPHA, e.ONE, e.ONE_MINUS_SRC_ALPHA);
       let v = e.createBuffer();
       e.bindBuffer(e.ARRAY_BUFFER, v), e.bufferData(e.ARRAY_BUFFER, tt * 4, e.DYNAMIC_DRAW), e.bindBuffer(e.ARRAY_BUFFER, null);
@@ -8515,13 +8515,13 @@
     __name(x, "x");
     s(x, "makeTex");
     function P(l = Ut, y = bt) {
-      let g, v = nn.replace("{{user}}", l != null ? l : Ut), A = sn.replace("{{user}}", y != null ? y : bt), R = e.createShader(e.VERTEX_SHADER), z = e.createShader(e.FRAGMENT_SHADER);
-      if (e.shaderSource(R, v), e.shaderSource(z, A), e.compileShader(R), e.compileShader(z), g = e.getShaderInfoLog(R))
+      let g, v = nn.replace("{{user}}", l != null ? l : Ut), A = sn.replace("{{user}}", y != null ? y : bt), R = e.createShader(e.VERTEX_SHADER), z2 = e.createShader(e.FRAGMENT_SHADER);
+      if (e.shaderSource(R, v), e.shaderSource(z2, A), e.compileShader(R), e.compileShader(z2), g = e.getShaderInfoLog(R))
         throw new Error(g);
-      if (g = e.getShaderInfoLog(z))
+      if (g = e.getShaderInfoLog(z2))
         throw new Error(g);
       let k2 = e.createProgram();
-      if (e.attachShader(k2, R), e.attachShader(k2, z), e.bindAttribLocation(k2, 0, "a_pos"), e.bindAttribLocation(k2, 1, "a_uv"), e.bindAttribLocation(k2, 2, "a_color"), e.linkProgram(k2), (g = e.getProgramInfoLog(k2)) && g !== `
+      if (e.attachShader(k2, R), e.attachShader(k2, z2), e.bindAttribLocation(k2, 0, "a_pos"), e.bindAttribLocation(k2, 1, "a_uv"), e.bindAttribLocation(k2, 2, "a_color"), e.linkProgram(k2), (g = e.getProgramInfoLog(k2)) && g !== `
 `)
         throw new Error(g);
       return { bind() {
@@ -8542,20 +8542,20 @@
     __name(P, "P");
     s(P, "makeProgram");
     function w(l, y, g, v) {
-      let A = l.width / y, R = l.height / g, z = 1 / A, k2 = 1 / R, T = {}, Q = v.split("").entries();
+      let A = l.width / y, R = l.height / g, z2 = 1 / A, k2 = 1 / R, T = {}, Q = v.split("").entries();
       for (let [q, K] of Q)
-        T[K] = u(q % A * z, Math.floor(q / A) * k2);
-      return { tex: l, map: T, qw: z, qh: k2 };
+        T[K] = u(q % A * z2, Math.floor(q / A) * k2);
+      return { tex: l, map: T, qw: z2, qh: k2 };
     }
     __name(w, "w");
     s(w, "makeFont");
     function C(l, y, g = t.defTex, v = t.defProg, A = {}) {
       g = g != null ? g : t.defTex, v = v != null ? v : t.defProg, (g !== t.curTex || v !== t.curProg || !pt(t.curUniform, A) || t.vqueue.length + l.length * Ye > tt || t.iqueue.length + y.length > tt) && S(), t.curTex = g, t.curProg = v, t.curUniform = A;
-      let R = y.map((k2) => k2 + t.vqueue.length / Ye), z = l.map((k2) => {
+      let R = y.map((k2) => k2 + t.vqueue.length / Ye), z2 = l.map((k2) => {
         let T = G(t.transform.multVec2(k2.pos.xy()));
         return [T.x, T.y, k2.pos.z, k2.uv.x, k2.uv.y, k2.color.r / 255, k2.color.g / 255, k2.color.b / 255, k2.opacity];
       }).flat();
-      R.forEach((k2) => t.iqueue.push(k2)), z.forEach((k2) => t.vqueue.push(k2));
+      R.forEach((k2) => t.iqueue.push(k2)), z2.forEach((k2) => t.vqueue.push(k2));
     }
     __name(C, "C");
     s(C, "drawRaw");
@@ -8626,14 +8626,14 @@
     s(D, "popTransform");
     function E(l = {}) {
       var K, oe, ge, ae, ye, Ue;
-      let y = l.width || 0, g = l.height || 0, v = l.pos || u(0, 0), R = Xe(l.origin || et).scale(u(y, g).scale(-0.5)), z = u((K = l.scale) != null ? K : 1), k2 = l.rot || 0, T = l.quad || he(0, 0, 1, 1), Q = 1 - ((oe = l.z) != null ? oe : 0), q = l.color || H();
-      pe(), O(v), m(k2), j(z), O(R), C([{ pos: we(-y / 2, g / 2, Q), uv: u(l.flipX ? T.x + T.w : T.x, l.flipY ? T.y : T.y + T.h), color: q, opacity: (ge = l.opacity) != null ? ge : 1 }, { pos: we(-y / 2, -g / 2, Q), uv: u(l.flipX ? T.x + T.w : T.x, l.flipY ? T.y + T.h : T.y), color: q, opacity: (ae = l.opacity) != null ? ae : 1 }, { pos: we(y / 2, -g / 2, Q), uv: u(l.flipX ? T.x : T.x + T.w, l.flipY ? T.y + T.h : T.y), color: q, opacity: (ye = l.opacity) != null ? ye : 1 }, { pos: we(y / 2, g / 2, Q), uv: u(l.flipX ? T.x : T.x + T.w, l.flipY ? T.y : T.y + T.h), color: q, opacity: (Ue = l.opacity) != null ? Ue : 1 }], [0, 1, 3, 1, 2, 3], l.tex, l.prog, l.uniform), D();
+      let y = l.width || 0, g = l.height || 0, v = l.pos || u(0, 0), R = Xe(l.origin || et).scale(u(y, g).scale(-0.5)), z2 = u((K = l.scale) != null ? K : 1), k2 = l.rot || 0, T = l.quad || he(0, 0, 1, 1), Q = 1 - ((oe = l.z) != null ? oe : 0), q = l.color || H();
+      pe(), O(v), m(k2), j(z2), O(R), C([{ pos: we(-y / 2, g / 2, Q), uv: u(l.flipX ? T.x + T.w : T.x, l.flipY ? T.y : T.y + T.h), color: q, opacity: (ge = l.opacity) != null ? ge : 1 }, { pos: we(-y / 2, -g / 2, Q), uv: u(l.flipX ? T.x + T.w : T.x, l.flipY ? T.y + T.h : T.y), color: q, opacity: (ae = l.opacity) != null ? ae : 1 }, { pos: we(y / 2, -g / 2, Q), uv: u(l.flipX ? T.x : T.x + T.w, l.flipY ? T.y + T.h : T.y), color: q, opacity: (ye = l.opacity) != null ? ye : 1 }, { pos: we(y / 2, g / 2, Q), uv: u(l.flipX ? T.x : T.x + T.w, l.flipY ? T.y : T.y + T.h), color: q, opacity: (Ue = l.opacity) != null ? Ue : 1 }], [0, 1, 3, 1, 2, 3], l.tex, l.prog, l.uniform), D();
     }
     __name(E, "E");
     s(E, "drawQuad");
     function M(l, y = {}) {
-      var z;
-      let g = (z = y.quad) != null ? z : he(0, 0, 1, 1), v = l.width * g.w, A = l.height * g.h, R = u(1);
+      var z2;
+      let g = (z2 = y.quad) != null ? z2 : he(0, 0, 1, 1), v = l.width * g.w, A = l.height * g.h, R = u(1);
       if (y.tiled) {
         let k2 = Math.ceil((y.width || v) / v), T = Math.ceil((y.height || A) / A), q = Xe(y.origin || et).add(u(1, 1)).scale(0.5).scale(k2 * v, T * A);
         for (let K = 0; K < k2; K++)
@@ -8654,8 +8654,8 @@
         let Q = u(v.scale);
         y = y * Q.x, g = g * Q.y, v.scale = 1;
       }
-      let A = Xe(v.origin || et).scale(u(y, g)).scale(0.5), R = l.add(u(-y / 2, -g / 2)).sub(A), z = l.add(u(-y / 2, g / 2)).sub(A), k2 = l.add(u(y / 2, g / 2)).sub(A), T = l.add(u(y / 2, -g / 2)).sub(A);
-      W(R, z, v), W(z, k2, v), W(k2, T, v), W(T, R, v);
+      let A = Xe(v.origin || et).scale(u(y, g)).scale(0.5), R = l.add(u(-y / 2, -g / 2)).sub(A), z2 = l.add(u(-y / 2, g / 2)).sub(A), k2 = l.add(u(y / 2, g / 2)).sub(A), T = l.add(u(y / 2, -g / 2)).sub(A);
+      W(R, z2, v), W(z2, k2, v), W(k2, T, v), W(T, R, v);
     }
     __name(_, "_");
     s(_, "drawRectStroke");
@@ -8666,14 +8666,14 @@
     __name(W, "W");
     s(W, "drawLine");
     function V(l, y, g, v = {}) {
-      var z, k2, T;
+      var z2, k2, T;
       let A = v.z, R = v.color || H();
-      C([{ pos: we(l.x, l.y, A), uv: u(0, 0), color: R, opacity: (z = v.opacity) != null ? z : 1 }, { pos: we(y.x, y.y, A), uv: u(0, 0), color: R, opacity: (k2 = v.opacity) != null ? k2 : 1 }, { pos: we(g.x, g.y, A), uv: u(0, 0), color: R, opacity: (T = v.opacity) != null ? T : 1 }], [0, 1, 2], t.defTex, v.prog, v.uniform);
+      C([{ pos: we(l.x, l.y, A), uv: u(0, 0), color: R, opacity: (z2 = v.opacity) != null ? z2 : 1 }, { pos: we(y.x, y.y, A), uv: u(0, 0), color: R, opacity: (k2 = v.opacity) != null ? k2 : 1 }, { pos: we(g.x, g.y, A), uv: u(0, 0), color: R, opacity: (T = v.opacity) != null ? T : 1 }], [0, 1, 2], t.defTex, v.prog, v.uniform);
     }
     __name(V, "V");
     s(V, "drawTri");
     function F(l, y, g = {}) {
-      let v = (l + "").split(""), A = y.qw * y.tex.width, R = y.qh * y.tex.height, z = g.size || R, k2 = u(z / R).scale(u(g.scale || 1)), T = k2.x * A, Q = k2.y * R, q = 0, K = Q, oe = 0, ge = [], ae = [], ye = null, Ue = 0;
+      let v = (l + "").split(""), A = y.qw * y.tex.width, R = y.qh * y.tex.height, z2 = g.size || R, k2 = u(z2 / R).scale(u(g.scale || 1)), T = k2.x * A, Q = k2.y * R, q = 0, K = Q, oe = 0, ge = [], ae = [], ye = null, Ue = 0;
       for (; Ue < v.length; ) {
         let be = v[Ue];
         be === `
@@ -9650,15 +9650,15 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
       }
       __name(R, "R");
       s(R, "keyPress");
-      function z(n, i) {
+      function z2(n, i) {
         if (Array.isArray(n)) {
-          let o = n.map((d) => z(d, i));
+          let o = n.map((d) => z2(d, i));
           return () => o.forEach((d) => d());
         } else
           return typeof n == "function" ? m.on("input", () => t.keyPressed() && n()) : m.on("input", () => t.keyPressedRep(n) && i());
       }
-      __name(z, "z");
-      s(z, "keyPressRep");
+      __name(z2, "z");
+      s(z2, "keyPressRep");
       function k2(n, i) {
         if (Array.isArray(n)) {
           let o = n.map((d) => k2(d, i));
@@ -10378,7 +10378,7 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
       }
       __name(Hr, "Hr");
       s(Hr, "addLevel");
-      let Me = { loadRoot: w.loadRoot, loadSprite: w.loadSprite, loadSpriteAtlas: w.loadSpriteAtlas, loadSound: w.loadSound, loadFont: w.loadFont, loadShader: w.loadShader, loadAseprite: w.loadAseprite, loadPedit: w.loadPedit, loadBean: w.loadBean, load: w.load, width: x, height: P, center: ut, dt: X, time: t.time, screenshot: t.screenshot, focused: t.focused, focus: t.focus, cursor: t.cursor, regCursor: nt, fullscreen: t.fullscreen, ready: Le, isTouch: () => t.isTouch, layers: pe, camPos: D, camScale: E, camRot: M, shake: J, toScreen: _, toWorld: W, gravity: be, add: p, readd: $, destroy: Ve, destroyAll: rt, get: Ee, every: xe, revery: ve, pos: Je, scale: Ie, rotate: st, color: it, opacity: vr, origin: Br, layer: Cr, area: Rr, sprite: Ar, text: kr, rect: Vr, outline: Ir, body: Wr, shader: Xr, timer: Mr, solid: Lr, fixed: qr, stay: $r, health: Yr, lifespan: zr, z: Pr, move: Dr, cleanup: Tr, follow: Sr, on: ce, action: ie, render: N, collides: ze, clicks: l, hovers: y, keyDown: A, keyPress: R, keyPressRep: z, keyRelease: k2, mouseDown: T, mouseClick: Q, mouseRelease: q, mouseMove: K, charInput: oe, touchStart: ge, touchMove: ae, touchEnd: ye, mousePos: G, mouseWorldPos: re, mouseDeltaPos: t.mouseDeltaPos, keyIsDown: t.keyDown, keyIsPressed: t.keyPressed, keyIsPressedRep: t.keyPressedRep, keyIsReleased: t.keyReleased, mouseIsDown: t.mouseDown, mouseIsClicked: t.mouseClicked, mouseIsReleased: t.mouseReleased, mouseIsMoved: t.mouseMoved, loop: v, wait: g, play: ee, volume: r.volume, burp: r.burp, audioCtx: r.ctx, rng: ft, rand: $e, randi: mt, randSeed: Mt, vec2: u, dir: je, rgb: H, quad: he, choose: Ft, chance: _t, lerp: qe, map: Ae, mapc: Rt, wave: Vt, deg2rad: _e, rad2deg: ht, colLineLine: Lt, colRectRect: Oe, drawSprite: O, drawText: j, drawRect: c.drawRect, drawRectStroke: c.drawRectStroke, drawLine: c.drawLine, drawTri: c.drawTri, debug: ne, scene: Zr, go: Gr, addLevel: Hr, getData: Jr, setData: wt, plug: at, ASCII_CHARS: xt, CP437_CHARS: dr, LEFT: u(-1, 0), RIGHT: u(1, 0), UP: u(0, -1), DOWN: u(0, 1), canvas: t.canvas };
+      let Me = { loadRoot: w.loadRoot, loadSprite: w.loadSprite, loadSpriteAtlas: w.loadSpriteAtlas, loadSound: w.loadSound, loadFont: w.loadFont, loadShader: w.loadShader, loadAseprite: w.loadAseprite, loadPedit: w.loadPedit, loadBean: w.loadBean, load: w.load, width: x, height: P, center: ut, dt: X, time: t.time, screenshot: t.screenshot, focused: t.focused, focus: t.focus, cursor: t.cursor, regCursor: nt, fullscreen: t.fullscreen, ready: Le, isTouch: () => t.isTouch, layers: pe, camPos: D, camScale: E, camRot: M, shake: J, toScreen: _, toWorld: W, gravity: be, add: p, readd: $, destroy: Ve, destroyAll: rt, get: Ee, every: xe, revery: ve, pos: Je, scale: Ie, rotate: st, color: it, opacity: vr, origin: Br, layer: Cr, area: Rr, sprite: Ar, text: kr, rect: Vr, outline: Ir, body: Wr, shader: Xr, timer: Mr, solid: Lr, fixed: qr, stay: $r, health: Yr, lifespan: zr, z: Pr, move: Dr, cleanup: Tr, follow: Sr, on: ce, action: ie, render: N, collides: ze, clicks: l, hovers: y, keyDown: A, keyPress: R, keyPressRep: z2, keyRelease: k2, mouseDown: T, mouseClick: Q, mouseRelease: q, mouseMove: K, charInput: oe, touchStart: ge, touchMove: ae, touchEnd: ye, mousePos: G, mouseWorldPos: re, mouseDeltaPos: t.mouseDeltaPos, keyIsDown: t.keyDown, keyIsPressed: t.keyPressed, keyIsPressedRep: t.keyPressedRep, keyIsReleased: t.keyReleased, mouseIsDown: t.mouseDown, mouseIsClicked: t.mouseClicked, mouseIsReleased: t.mouseReleased, mouseIsMoved: t.mouseMoved, loop: v, wait: g, play: ee, volume: r.volume, burp: r.burp, audioCtx: r.ctx, rng: ft, rand: $e, randi: mt, randSeed: Mt, vec2: u, dir: je, rgb: H, quad: he, choose: Ft, chance: _t, lerp: qe, map: Ae, mapc: Rt, wave: Vt, deg2rad: _e, rad2deg: ht, colLineLine: Lt, colRectRect: Oe, drawSprite: O, drawText: j, drawRect: c.drawRect, drawRectStroke: c.drawRectStroke, drawLine: c.drawLine, drawTri: c.drawTri, debug: ne, scene: Zr, go: Gr, addLevel: Hr, getData: Jr, setData: wt, plug: at, ASCII_CHARS: xt, CP437_CHARS: dr, LEFT: u(-1, 0), RIGHT: u(1, 0), UP: u(0, -1), DOWN: u(0, 1), canvas: t.canvas };
       if (at(gr), e.plugins && e.plugins.forEach(at), e.global !== false)
         for (let n in Me)
           window[n] = Me[n];
@@ -10519,7 +10519,7 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
       const protocol = location.protocol === "https:" ? "wss" : "ws";
       const url = `${protocol}://${location.host}/multiplayer`;
       const chance2 = new import_chance.default();
-      this.name = chance2.name();
+      this.name = chance2.animal();
       console.log("My name is", this.name);
       console.log("Connecting to ws", url);
       this.ws = new WebSocket(url);
@@ -10595,7 +10595,16 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
     const scoreLabel = add([
       text(score, 2),
       pos(12, 12),
-      fixed()
+      fixed(),
+      z(100)
+    ]);
+    const playerNameHud = add([
+      text(mp.name, {
+        size: 24
+      }),
+      pos(12, height() - 36),
+      fixed(),
+      z(100)
     ]);
     const player = getPlayer("currant");
     const playedModel = new PlayerModel(80, 40, player);

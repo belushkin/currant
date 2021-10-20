@@ -17,6 +17,16 @@ k.scene("game", () => {
       text(score, 2),
       pos(12, 12),
       fixed(),
+      z(100),
+  ]);
+
+  const playerNameHud = add([
+    text(mp.name, {
+      size: 24
+    }),
+    pos(12, height() - 36),
+    fixed(),
+    z(100),
   ]);
 
   // Init player

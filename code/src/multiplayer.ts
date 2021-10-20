@@ -15,7 +15,7 @@ export default class Multiplayer {
     const protocol = location.protocol === "https:" ? "wss" : "ws"
     const url = `${protocol}://${location.host}/multiplayer`;
     const chance = new Chance();
-    this.name = chance.name();
+    this.name = chance.animal();
     console.log("My name is", this.name);
     console.log("Connecting to ws" , url);
     this.ws = new WebSocket(url)
