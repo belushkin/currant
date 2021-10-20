@@ -26,15 +26,20 @@ export default class Multiplayer {
   onMessage(event) {
     const payload = JSON.parse(event.data)
     console.log('RCV', payload);
+    switch (payload.commandName) {
+      case 'connected':
+        this.handleConnected(payload);
+        break;
+    }
   }
 
   private handleConnected(cmd): void
   {
-
+    this.uuid = cmd.user;
+    this.join(this.name)  
   }
 
   onOpen(event) {
-    this.join(this.name)  
   }
 
   join(name: string) {

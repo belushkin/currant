@@ -166,14 +166,14 @@
           options = initOptions(options, { fixed: 4 });
           testRange(options.fixed && options.precision, "Chance: Cannot specify both fixed and precision.");
           var num;
-          var fixed = Math.pow(10, options.fixed);
-          var max = MAX_INT / fixed;
+          var fixed2 = Math.pow(10, options.fixed);
+          var max = MAX_INT / fixed2;
           var min = -max;
           testRange(options.min && options.fixed && options.min < min, "Chance: Min specified is out of range with fixed. Min should be, at least, " + min);
           testRange(options.max && options.fixed && options.max > max, "Chance: Max specified is out of range with fixed. Max should be, at most, " + max);
           options = initOptions(options, { min, max });
-          num = this.integer({ min: options.min * fixed, max: options.max * fixed });
-          var num_fixed = (num / fixed).toFixed(options.fixed);
+          num = this.integer({ min: options.min * fixed2, max: options.max * fixed2 });
+          var num_fixed = (num / fixed2).toFixed(options.fixed);
           return parseFloat(num_fixed);
         };
         Chance2.prototype.integer = function(options) {
@@ -265,8 +265,8 @@
             options.length = this.natural({ min: options.min, max: options.max });
           }
           testRange(options.length < 0, "Chance: Length cannot be less than zero.");
-          var length = options.length, text = this.n(this.character, length, options);
-          return text.join("");
+          var length = options.length, text2 = this.n(this.character, length, options);
+          return text2.join("");
         };
         function CopyToken(c) {
           this.c = c;
@@ -512,20 +512,20 @@
         };
         Chance2.prototype.sentence = function(options) {
           options = initOptions(options);
-          var words = options.words || this.natural({ min: 12, max: 18 }), punctuation = options.punctuation, text, word_array = this.n(this.word, words);
-          text = word_array.join(" ");
-          text = this.capitalize(text);
+          var words = options.words || this.natural({ min: 12, max: 18 }), punctuation = options.punctuation, text2, word_array = this.n(this.word, words);
+          text2 = word_array.join(" ");
+          text2 = this.capitalize(text2);
           if (punctuation !== false && !/^[.?;!:]$/.test(punctuation)) {
             punctuation = ".";
           }
           if (punctuation) {
-            text += punctuation;
+            text2 += punctuation;
           }
-          return text;
+          return text2;
         };
         Chance2.prototype.syllable = function(options) {
           options = initOptions(options);
-          var length = options.length || this.natural({ min: 2, max: 3 }), consonants = "bcdfghjklmnprstvwz", vowels = "aeiou", all = consonants + vowels, text = "", chr;
+          var length = options.length || this.natural({ min: 2, max: 3 }), consonants = "bcdfghjklmnprstvwz", vowels = "aeiou", all = consonants + vowels, text2 = "", chr;
           for (var i = 0; i < length; i++) {
             if (i === 0) {
               chr = this.character({ pool: all });
@@ -534,31 +534,31 @@
             } else {
               chr = this.character({ pool: vowels });
             }
-            text += chr;
+            text2 += chr;
           }
           if (options.capitalize) {
-            text = this.capitalize(text);
+            text2 = this.capitalize(text2);
           }
-          return text;
+          return text2;
         };
         Chance2.prototype.word = function(options) {
           options = initOptions(options);
           testRange(options.syllables && options.length, "Chance: Cannot specify both syllables AND length.");
-          var syllables = options.syllables || this.natural({ min: 1, max: 3 }), text = "";
+          var syllables = options.syllables || this.natural({ min: 1, max: 3 }), text2 = "";
           if (options.length) {
             do {
-              text += this.syllable();
-            } while (text.length < options.length);
-            text = text.substring(0, options.length);
+              text2 += this.syllable();
+            } while (text2.length < options.length);
+            text2 = text2.substring(0, options.length);
           } else {
             for (var i = 0; i < syllables; i++) {
-              text += this.syllable();
+              text2 += this.syllable();
             }
           }
           if (options.capitalize) {
-            text = this.capitalize(text);
+            text2 = this.capitalize(text2);
           }
-          return text;
+          return text2;
         };
         Chance2.prototype.age = function(options) {
           options = initOptions(options);
@@ -8069,20 +8069,20 @@
   var Pt = Object.getOwnPropertySymbols;
   var Qr = Object.prototype.hasOwnProperty;
   var Kr = Object.prototype.propertyIsEnumerable;
-  var dt = /* @__PURE__ */ __name((e, r, t) => r in e ? Ct(e, r, { enumerable: true, configurable: true, writable: true, value: t }) : e[r] = t, "dt");
+  var dt2 = /* @__PURE__ */ __name((e, r, t) => r in e ? Ct(e, r, { enumerable: true, configurable: true, writable: true, value: t }) : e[r] = t, "dt");
   var Ce = /* @__PURE__ */ __name((e, r) => {
     for (var t in r || (r = {}))
-      Qr.call(r, t) && dt(e, t, r[t]);
+      Qr.call(r, t) && dt2(e, t, r[t]);
     if (Pt)
       for (var t of Pt(r))
-        Kr.call(r, t) && dt(e, t, r[t]);
+        Kr.call(r, t) && dt2(e, t, r[t]);
     return e;
   }, "Ce");
   var Re = /* @__PURE__ */ __name((e, r) => jr(e, Or(r)), "Re");
   var s = /* @__PURE__ */ __name((e, r) => Ct(e, "name", { value: r, configurable: true }), "s");
   var se = /* @__PURE__ */ __name((e, r) => () => (e && (r = e(e = 0)), r), "se");
   var en = /* @__PURE__ */ __name((e, r) => () => (r || e((r = { exports: {} }).exports, r), r.exports), "en");
-  var St = /* @__PURE__ */ __name((e, r, t) => (dt(e, typeof r != "symbol" ? r + "" : r, t), t), "St");
+  var St = /* @__PURE__ */ __name((e, r, t) => (dt2(e, typeof r != "symbol" ? r + "" : r, t), t), "St");
   var Dt = /* @__PURE__ */ __name((e, r, t) => new Promise((c, x) => {
     var P = /* @__PURE__ */ __name((S) => {
       try {
@@ -10411,66 +10411,68 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
 
   // code/kaboom.js
   var k = kaboom_default({
-    background: [144, 238, 144],
-    width: 300,
-    height: 300
+    background: [144, 238, 144]
   });
   var kaboom_default2 = k;
 
-  // code/src/map.js
-  var block_size = 10;
-  function border_map() {
-    kaboom_default2.addLevel([
-      "===============================",
-      "=                             = ",
-      "=                             = ",
-      "=                             = ",
-      "=                             = ",
-      "=                             = ",
-      "=                             = ",
-      "=                             = ",
-      "=                             = ",
-      "=                             = ",
-      "=                             = ",
-      "=                             = ",
-      "=                             = ",
-      "==============================="
-    ], {
-      width: block_size,
-      height: block_size,
-      pos: vec2(0, 0),
-      "=": () => [
-        rect(block_size, block_size),
-        color(255, 0, 0),
-        area(),
-        "wall"
-      ]
-    });
-  }
-  __name(border_map, "border_map");
-
   // code/src/food.js
+  loadSprite("apple", "sprites/apple.png");
   function spawnFood() {
     add([
-      rect(18, rand(12, 26)),
+      sprite("apple"),
+      scale(0.5),
       area(),
-      outline(1),
       pos(rand(0, width()), rand(0, height())),
-      color(255, 180, 255),
       "food"
     ]);
     wait(rand(0.5, 1.5), spawnFood);
   }
   __name(spawnFood, "spawnFood");
 
+  // code/src/big.js
+  function big() {
+    let timer = 0;
+    let isBig = false;
+    let destScale = 1;
+    return {
+      id: "big",
+      require: ["scale"],
+      update() {
+        if (isBig) {
+          timer -= dt();
+          if (timer <= 0) {
+            this.smallify();
+          }
+        }
+        this.scale = this.scale.lerp(vec2(destScale), dt() * 6);
+      },
+      isBig() {
+        return isBig;
+      },
+      smallify() {
+        destScale = 1;
+        timer = 0;
+        isBig = false;
+      },
+      biggify(time) {
+        destScale++;
+        timer = time;
+        isBig = true;
+      }
+    };
+  }
+  __name(big, "big");
+
   // code/src/player.js
+  loadSprite("bean", "sprites/bean.png");
   function getPlayer(tag) {
     const player = kaboom_default2.add([
-      rect(20, 20),
-      pos(80, 40),
-      color(0, 0, 255),
+      sprite("bean"),
+      pos(center()),
       area(),
       move(0, 0),
+      scale(1),
+      big(),
       tag
     ]);
     return player;
@@ -10480,14 +10482,28 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
   // code/src/moveModel.ts
   function setMoveAction(playerModel) {
     kaboom_default2.action(() => {
+      let pad = vec2(0, 0);
+      const base = vec2(0, 0);
       if (kaboom_default2.keyIsDown("left")) {
-        playerModel.setMove(180);
-      } else if (kaboom_default2.keyIsDown("right")) {
-        playerModel.setMove(0);
-      } else if (kaboom_default2.keyIsDown("down")) {
-        playerModel.setMove(90);
-      } else if (kaboom_default2.keyIsDown("up")) {
-        playerModel.setMove(270);
+        pad.x -= 1;
+      }
+      if (kaboom_default2.keyIsDown("right")) {
+        pad.x += 1;
+      }
+      if (kaboom_default2.keyIsDown("down")) {
+        pad.y += 1;
+      }
+      if (kaboom_default2.keyIsDown("up")) {
+        pad.y -= 1;
+      }
+      if (kaboom_default2.mouseIsDown()) {
+        pad = kaboom_default2.mouseWorldPos().sub(playerModel.getPos());
+        if (pad.len() < 100) {
+          pad = vec2(0, 0);
+        }
+      }
+      if (pad.len() > 0) {
+        playerModel.setMove(pad.angle(base));
       } else {
         playerModel.stop();
       }
@@ -10513,9 +10529,17 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
     onMessage(event) {
       const payload = JSON.parse(event.data);
       console.log("RCV", payload);
+      switch (payload.commandName) {
+        case "connected":
+          this.handleConnected(payload);
+          break;
+      }
+    }
+    handleConnected(cmd) {
+      this.uuid = cmd.user;
+      this.join(this.name);
     }
     onOpen(event) {
-      this.join(this.name);
     }
     join(name) {
       const cmd = {
@@ -10567,7 +10591,12 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
   // code/main.js
   var mp = new Multiplayer();
   kaboom_default2.scene("game", () => {
-    border_map();
+    let score = 0;
+    const scoreLabel = add([
+      text(score, 2),
+      pos(12, 12),
+      fixed()
+    ]);
     const player = getPlayer("currant");
     const playedModel = new PlayerModel(80, 40, player);
     window.p1 = playedModel;
@@ -10575,6 +10604,10 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
     setMoveAction(playedModel);
     player.collides("food", (food) => {
       destroy(food);
+      score += 1;
+      scoreLabel.text = score;
+      addKaboom(player.pos);
+      player.biggify(0.5);
     });
   });
   go("game");

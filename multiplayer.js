@@ -6,6 +6,8 @@ module.exports = (server) => {
 	const chance = new Chance();
 	const socket = new ws.Server({ server: server, path: "/multiplayer" });
 
+  //TODO: Store all active players
+	//
 	console.log('Socket was open');
 
 	socket.on("connection", (conn) => {
@@ -15,6 +17,11 @@ module.exports = (server) => {
 
 		send({
 			commandName: "connected",
+			user: uuid
+		});
+
+		broadcast({
+			commandName: "newPlayer",
 			user: uuid
 		});
 

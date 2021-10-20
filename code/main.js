@@ -29,10 +29,6 @@ k.scene("game", () => {
 
   // move
   setMoveAction(playedModel);
-  // make the layer move by mouse
-  // mouseDown(() => {
-  //   player.pos = mousePos();
-  // })
 
   player.collides("food", (food) => {
     destroy(food);
