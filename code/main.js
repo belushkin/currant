@@ -1,13 +1,14 @@
 import k from "./kaboom";
 import spawnFood from "./src/food";
 import getPlayer from "./src/player";
-import getEnemy from "./src/enemy";
 
 // import { setMoveAction } from "./src/move";
 import { setMoveAction } from "./src/moveModel";
 
 import Multiplayer from "./src/multiplayer"
 import PlayerModel from "./src/playerModel";
+
+loadSprite("googoly", "sprites/googoly.png");
 
 const mp = new Multiplayer()
 
@@ -17,6 +18,8 @@ const JULEP_HEALTH = 1000;
 const OBJ_HEALTH = 4;
 
 let insaneMode = false;
+let score = 0;
+let scoreLabel;
 
 function addButton(txt, p, f) {
     const btn = add([
@@ -44,25 +47,25 @@ function addButton(txt, p, f) {
 
 k.scene("end", () => {
   add([
-      text("Game over!", { size: 26 }),
+      text("Game over. Your score is: " + scoreLabel.text, { size: 46 }),
       pos(width() / 2, height() / 2),
       origin("center"),
       fixed(),
   ]);
-  addButton("Start", vec2(width() / 2, (height() / 2) + 26) , () => go("battle"));
+  addButton("Start", vec2(width() / 2, (height() / 2) + 96) , () => go("battle"));
 });
 
 
 k.scene("start", () => {
 
 add([
-		text("Play the game", { size: 26 }),
+		text("Play the game: Currant Julep", { size: 26 }),
 		pos(width() / 2, height() / 2),
 		origin("center"),
 		fixed(),
 	]);
-  addButton("Start", vec2(width() / 2, (height() / 2) + 76), () => go("battle"));
-  addButton("Quit", vec2(width() / 2, (height() / 2) + 146), () => go("end"));
+  addButton("Play", vec2(width() / 2, (height() / 2) + 76), () => go("battle"));
+  addButton("Exit", vec2(width() / 2, (height() / 2) + 146), () => go("end"));
 });
 
 k.scene("battle", () => {
@@ -131,18 +134,17 @@ k.scene("battle", () => {
 	}
 
   add([
-		text("KILL", { size: 160 }),
-		pos(width() / 2, height() / 2),
-		origin("center"),
+		text("KILL", { size: 60 }),
+		pos(width()-220, 40),
+		// origin("topright"),
 		lifespan(1),
 		fixed(),
 		layer("ui"),
 	]);
 
 	add([
-		text("THE", { size: 80 }),
-		pos(width() / 2, height() / 2),
-		origin("center"),
+		text("THE", { size: 60 }),
+		pos(width()-220, 40),
 		lifespan(2),
 		late(1),
 		fixed(),
@@ -150,17 +152,16 @@ k.scene("battle", () => {
 	]);
 
 	add([
-		text('JULEP', { size: 120 }),
-		pos(width() / 2, height() / 2),
-		origin("center"),
+		text('JULEP', { size: 60 }),
+		pos(width()-220, 40),
 		lifespan(4),
 		late(2),
 		fixed(),
 		layer("ui"),
 	]);
 
-  let score = 0;
-  const scoreLabel = add([
+  
+  scoreLabel = add([
       text(score, 2),
       pos(12, 12),
       fixed(),
@@ -168,13 +169,6 @@ k.scene("battle", () => {
       layer("ui"),
   ]);
   
-  // Init enemy
-  const enemy = getEnemy("julep");
-  
-  enemy.action(() => {
-	  enemy.moveTo(player.pos, 80);
-  });
-
   const playerNameHud = add([
     text(mp.name, {
       size: 24
@@ -184,13 +178,41 @@ k.scene("battle", () => {
     z(100),
   ]);
 
+  // spawn food
+  spawnFood();
+
   // Init player
   const player = getPlayer("currant");
-  const playedModel = new PlayerModel(80, 40, player);
+  const playedModel = new PlayerModel(width()/2, height()/2, player);
   window.p1 = playedModel;
 
-  // start spawning foods
-  spawnFood();
+  function spawnEnemy() {
+		// add enemy obj
+		const enemy = add([
+			sprite("googoly"),
+      pos(rand(width()), rand(height())),
+      area(),
+      origin("top"),
+      'enemy'
+		]);
+
+    enemy.action(() => {
+      enemy.moveTo(player.pos, 80);
+    });
+
+    enemy.collides("bullet", (b) => {
+      destroy(enemy);
+      destroy(b);
+      score += 1;
+      scoreLabel.text = score;
+      addKaboom(enemy.pos);
+    });
+
+		// wait a random amount of time to spawn next tree
+		wait(rand(0.5, 1.5), spawnEnemy);
+	}
+  // start spawning enemies
+  spawnEnemy();
 
   // move
   setMoveAction(playedModel);
@@ -210,13 +232,11 @@ k.scene("battle", () => {
     
   player.collides("food", (food) => {
     destroy(food);
-    score += 1;
-    scoreLabel.text = score;
     addKaboom(player.pos);
     player.biggify(0.5);
   });
 
-  player.collides("julep", (e) => {
+  player.collides("enemy", (e) => {
 		destroy(e);
 		destroy(player);
 		shake(120);

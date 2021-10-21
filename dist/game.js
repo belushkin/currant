@@ -10470,29 +10470,13 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
       sprite("bean"),
       pos(center()),
       area(),
-      move(0, 0),
       scale(1),
       big(),
-      origin("center"),
       tag
     ]);
     return player;
   }
   __name(getPlayer, "getPlayer");
-
-  // code/src/enemy.js
-  loadSprite("googoly", "sprites/googoly.png");
-  function getEnemy(tag) {
-    const enemy = kaboom_default2.add([
-      sprite("googoly"),
-      pos(0, 0),
-      area(),
-      origin("top"),
-      tag
-    ]);
-    return enemy;
-  }
-  __name(getEnemy, "getEnemy");
 
   // code/src/moveModel.ts
   function setMoveAction(playerModel) {
@@ -10604,8 +10588,11 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
   __name(PlayerModel, "PlayerModel");
 
   // code/main.js
+  loadSprite("googoly", "sprites/googoly.png");
   var mp = new Multiplayer();
   var BULLET_SPEED = 1200;
+  var score = 0;
+  var scoreLabel;
   function addButton(txt, p, f) {
     const btn = add([
       text(txt, 8),
@@ -10627,22 +10614,22 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
   __name(addButton, "addButton");
   kaboom_default2.scene("end", () => {
     add([
-      text("Game over!", { size: 26 }),
+      text("Game over. Your score is: " + scoreLabel.text, { size: 46 }),
       pos(width() / 2, height() / 2),
       origin("center"),
       fixed()
     ]);
-    addButton("Start", vec2(width() / 2, height() / 2 + 26), () => go("battle"));
+    addButton("Start", vec2(width() / 2, height() / 2 + 96), () => go("battle"));
   });
   kaboom_default2.scene("start", () => {
     add([
-      text("Play the game", { size: 26 }),
+      text("Play the game: Currant Julep", { size: 26 }),
       pos(width() / 2, height() / 2),
       origin("center"),
       fixed()
     ]);
-    addButton("Start", vec2(width() / 2, height() / 2 + 76), () => go("battle"));
-    addButton("Quit", vec2(width() / 2, height() / 2 + 146), () => go("end"));
+    addButton("Play", vec2(width() / 2, height() / 2 + 76), () => go("battle"));
+    addButton("Exit", vec2(width() / 2, height() / 2 + 146), () => go("end"));
   });
   kaboom_default2.scene("battle", () => {
     layers([
@@ -10708,43 +10695,35 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
     }
     __name(spawnBullet, "spawnBullet");
     add([
-      text("KILL", { size: 160 }),
-      pos(width() / 2, height() / 2),
-      origin("center"),
+      text("KILL", { size: 60 }),
+      pos(width() - 220, 40),
       lifespan(1),
       fixed(),
       layer("ui")
     ]);
     add([
-      text("THE", { size: 80 }),
-      pos(width() / 2, height() / 2),
-      origin("center"),
+      text("THE", { size: 60 }),
+      pos(width() - 220, 40),
       lifespan(2),
       late(1),
       fixed(),
       layer("ui")
     ]);
     add([
-      text("JULEP", { size: 120 }),
-      pos(width() / 2, height() / 2),
-      origin("center"),
+      text("JULEP", { size: 60 }),
+      pos(width() - 220, 40),
       lifespan(4),
       late(2),
       fixed(),
       layer("ui")
     ]);
-    let score = 0;
-    const scoreLabel = add([
+    scoreLabel = add([
       text(score, 2),
       pos(12, 12),
       fixed(),
       z(100),
       layer("ui")
     ]);
-    const enemy = getEnemy("julep");
-    enemy.action(() => {
-      enemy.moveTo(player.pos, 80);
-    });
     const playerNameHud = add([
       text(mp.name, {
         size: 24
@@ -10753,10 +10732,32 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
       fixed(),
       z(100)
     ]);
-    const player = getPlayer("currant");
-    const playedModel = new PlayerModel(80, 40, player);
-    window.p1 = playedModel;
     spawnFood();
+    const player = getPlayer("currant");
+    const playedModel = new PlayerModel(width() / 2, height() / 2, player);
+    window.p1 = playedModel;
+    function spawnEnemy() {
+      const enemy = add([
+        sprite("googoly"),
+        pos(rand(width()), rand(height())),
+        area(),
+        origin("top"),
+        "enemy"
+      ]);
+      enemy.action(() => {
+        enemy.moveTo(player.pos, 80);
+      });
+      enemy.collides("bullet", (b) => {
+        destroy(enemy);
+        destroy(b);
+        score += 1;
+        scoreLabel.text = score;
+        addKaboom(enemy.pos);
+      });
+      wait(rand(0.5, 1.5), spawnEnemy);
+    }
+    __name(spawnEnemy, "spawnEnemy");
+    spawnEnemy();
     setMoveAction(playedModel);
     keyPress("space", () => {
       spawnBullet(player.pos.sub(16, 0));
@@ -10767,12 +10768,10 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
     });
     player.collides("food", (food) => {
       destroy(food);
-      score += 1;
-      scoreLabel.text = score;
       addKaboom(player.pos);
       player.biggify(0.5);
     });
-    player.collides("julep", (e) => {
+    player.collides("enemy", (e) => {
       destroy(e);
       destroy(player);
       shake(120);

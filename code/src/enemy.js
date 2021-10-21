@@ -2,13 +2,17 @@ import k from "./../kaboom";
 
 loadSprite("googoly", "sprites/googoly.png");
 
-export default function getEnemy(tag) {
-  const enemy = k.add([
+export default function spawnEnemy() {
+  k.add([
     sprite("googoly"),
-    pos(0, 0),
+    pos(rand(width()), rand(height())),
     area(),
+    // moveTo(player.pos, 80),
     origin("top"),
-    tag
+    'enemy'
   ]);
-  return enemy;
+  wait(rand(0.5, 1.5), spawnEnemy());
+  // enemy.action(() => {
+	//   enemy.moveTo(player.pos, 80);
+  // });
 }
