@@ -34,7 +34,7 @@ export function setMoveAction(playerModel: PlayerModel) {
       playerModel.stop();
     }
 
-    camPos(playerModel.getPos());
+    // camPos(playerModel.getPos());
   });
 /*
   player.collides("wall", (food) => {

@@ -12,6 +12,7 @@ export default function getPlayer(tag) {
     move(0,0),
     scale(1),
     big(),
+    origin("center"),
     tag,
   ]);
   return player;

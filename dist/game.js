@@ -933,13 +933,13 @@
             return [value, value, value].join(delimiter || "");
           }
           __name(gray, "gray");
-          function rgb(hasAlpha) {
+          function rgb2(hasAlpha) {
             var rgbValue = hasAlpha ? "rgba" : "rgb";
             var alphaChannel = hasAlpha ? "," + this.floating({ min: min_alpha, max: max_alpha }) : "";
             var colorValue2 = isGrayscale ? gray(this.natural({ min: min_rgb, max: max_rgb }), ",") : this.natural({ min: min_green, max: max_green }) + "," + this.natural({ min: min_blue, max: max_blue }) + "," + this.natural({ max: 255 });
             return rgbValue + "(" + colorValue2 + alphaChannel + ")";
           }
-          __name(rgb, "rgb");
+          __name(rgb2, "rgb");
           function hex(start, end, withHash) {
             var symbol = withHash ? "#" : "";
             var hexstring = "";
@@ -1020,9 +1020,9 @@
           } else if (options.format === "shorthex") {
             colorValue = hex.call(this, 1, 3, true);
           } else if (options.format === "rgb") {
-            colorValue = rgb.call(this, false);
+            colorValue = rgb2.call(this, false);
           } else if (options.format === "rgba") {
-            colorValue = rgb.call(this, true);
+            colorValue = rgb2.call(this, true);
           } else if (options.format === "0x") {
             colorValue = "0x" + hex.call(this, 2, 6);
           } else if (options.format === "name") {
@@ -10454,9 +10454,9 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
         timer = 0;
         isBig = false;
       },
-      biggify(time) {
+      biggify(time2) {
         destScale++;
-        timer = time;
+        timer = time2;
         isBig = true;
       }
     };
@@ -10473,11 +10473,27 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
       move(0, 0),
       scale(1),
       big(),
+      origin("center"),
       tag
     ]);
     return player;
   }
   __name(getPlayer, "getPlayer");
+
+  // code/src/enemy.js
+  loadSprite("googoly", "sprites/googoly.png");
+  function getEnemy(tag) {
+    const enemy = kaboom_default2.add([
+      sprite("googoly"),
+      pos(0, 0),
+      area(),
+      move(0, 0),
+      origin("top"),
+      tag
+    ]);
+    return enemy;
+  }
+  __name(getEnemy, "getEnemy");
 
   // code/src/moveModel.ts
   function setMoveAction(playerModel) {
@@ -10507,7 +10523,6 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
       } else {
         playerModel.stop();
       }
-      camPos(playerModel.getPos());
     });
   }
   __name(setMoveAction, "setMoveAction");
@@ -10590,14 +10605,160 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
 
   // code/main.js
   var mp = new Multiplayer();
-  kaboom_default2.scene("game", () => {
+  var BULLET_SPEED = 1200;
+  function addButton(txt, p, f) {
+    const btn = add([
+      text(txt, 8),
+      pos(p),
+      area({ cursor: "pointer" }),
+      scale(1),
+      origin("center")
+    ]);
+    btn.clicks(f);
+    btn.hovers(() => {
+      const t = time() * 10;
+      btn.color = rgb(wave(0, 255, t), wave(0, 255, t + 2), wave(0, 255, t + 4));
+      btn.scale = vec2(1.2);
+    }, () => {
+      btn.scale = vec2(1);
+      btn.color = rgb();
+    });
+  }
+  __name(addButton, "addButton");
+  kaboom_default2.scene("end", () => {
+    add([
+      text("Game over!", { size: 26 }),
+      pos(width() / 2, height() / 2),
+      origin("center"),
+      fixed()
+    ]);
+    addButton("Start", vec2(width() / 2, height() / 2 + 26), () => go("battle"));
+  });
+  kaboom_default2.scene("start", () => {
+    add([
+      text("Play the game", { size: 26 }),
+      pos(width() / 2, height() / 2),
+      origin("center"),
+      fixed()
+    ]);
+    addButton("Start", vec2(width() / 2, height() / 2 + 76), () => go("battle"));
+    addButton("Quit", vec2(width() / 2, height() / 2 + 146), () => go("end"));
+  });
+  kaboom_default2.scene("battle", () => {
+    layers([
+      "game",
+      "ui"
+    ], "game");
+    function late(t) {
+      let timer = 0;
+      return {
+        add() {
+          this.hidden = true;
+        },
+        update() {
+          timer += dt();
+          if (timer >= t) {
+            this.hidden = false;
+          }
+        }
+      };
+    }
+    __name(late, "late");
+    function addExplode(p, n, rad, size) {
+      for (let i = 0; i < n; i++) {
+        wait(rand(n * 0.1), () => {
+          for (let i2 = 0; i2 < 2; i2++) {
+            add([
+              pos(p.add(rand(vec2(-rad), vec2(rad)))),
+              rect(4, 4),
+              outline(4),
+              scale(1 * size, 1 * size),
+              lifespan(0.1),
+              grow(rand(48, 72) * size),
+              origin("center"),
+              fixed()
+            ]);
+          }
+        });
+      }
+    }
+    __name(addExplode, "addExplode");
+    function grow(rate) {
+      return {
+        update() {
+          const n = rate * dt();
+          this.scale.x += n;
+          this.scale.y += n;
+        }
+      };
+    }
+    __name(grow, "grow");
+    function spawnBullet(p) {
+      add([
+        rect(12, 48),
+        area(),
+        pos(p),
+        origin("center"),
+        color(127, 127, 255),
+        outline(4),
+        move(UP, BULLET_SPEED),
+        cleanup(),
+        "bullet"
+      ]);
+    }
+    __name(spawnBullet, "spawnBullet");
+    function spawnBullet(p) {
+      add([
+        rect(12, 48),
+        area(),
+        pos(p),
+        origin("center"),
+        color(127, 127, 255),
+        outline(4),
+        move(enemy.pos, BULLET_SPEED),
+        cleanup(),
+        "bullet"
+      ]);
+    }
+    __name(spawnBullet, "spawnBullet");
+    add([
+      text("KILL", { size: 160 }),
+      pos(width() / 2, height() / 2),
+      origin("center"),
+      lifespan(1),
+      fixed(),
+      layer("ui")
+    ]);
+    add([
+      text("THE", { size: 80 }),
+      pos(width() / 2, height() / 2),
+      origin("center"),
+      lifespan(2),
+      late(1),
+      fixed(),
+      layer("ui")
+    ]);
+    add([
+      text("JULEP", { size: 120 }),
+      pos(width() / 2, height() / 2),
+      origin("center"),
+      lifespan(4),
+      late(2),
+      fixed(),
+      layer("ui")
+    ]);
     let score = 0;
     const scoreLabel = add([
       text(score, 2),
       pos(12, 12),
       fixed(),
-      z(100)
+      z(100),
+      layer("ui")
     ]);
+    const enemy = getEnemy("julep");
+    enemy.action(() => {
+      enemy.moveTo(player.pos, 80);
+    });
     const playerNameHud = add([
       text(mp.name, {
         size: 24
@@ -10611,6 +10772,13 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
     window.p1 = playedModel;
     spawnFood();
     setMoveAction(playedModel);
+    keyPress("space", () => {
+      spawnBullet(player.pos.sub(16, 0));
+      spawnBullet(player.pos.add(16, 0));
+    });
+    keyPress("q", () => {
+      go("end");
+    });
     player.collides("food", (food) => {
       destroy(food);
       score += 1;
@@ -10618,7 +10786,16 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
       addKaboom(player.pos);
       player.biggify(0.5);
     });
+    player.collides("julep", (e) => {
+      destroy(e);
+      destroy(player);
+      shake(120);
+      addExplode(center(), 12, 120, 30);
+      wait(1, () => {
+        go("battle");
+      });
+    });
   });
-  go("game");
+  go("start");
 })();
 //# sourceMappingURL=game.js.map
