@@ -1,72 +1,38 @@
 import k from "./kaboom";
+import Chance from "chance"
 import spawnFood from "./src/food";
 import getPlayer from "./src/player";
-
-// import { setMoveAction } from "./src/move";
-import { setMoveAction } from "./src/moveModel";
-
+import showMission from "./src/ui/showMission";
 import Multiplayer from "./src/multiplayer"
 import PlayerModel from "./src/playerModel";
+import startScene from "./src/scenes/start";
+import endScene from "./src/scenes/end";
+import showScoreLabel from "./src/ui/score";
+import setControls from "./src/controls";
+import showName from "./src/ui/name";
+import spawnEnemy from "./src/enemy";
+import addExplode from "./src/explode";
+
+const chance = new Chance();
+let name = chance.animal();
 
 loadSprite("googoly", "sprites/googoly.png");
 
-const mp = new Multiplayer()
+let mp;
 
-const BULLET_SPEED = 1200;
 const JULEP_SPEED = 48;
 const JULEP_HEALTH = 1000;
 const OBJ_HEALTH = 4;
 
 let insaneMode = false;
-let score = 0;
-let scoreLabel;
 
-function addButton(txt, p, f) {
-    const btn = add([
-      text(txt, 8),
-      pos(p),
-      area({ cursor: "pointer", }),
-      scale(1),
-      origin("center"),
-    ]);
-
-    btn.clicks(f);
-    btn.hovers(() => {
-      const t = time() * 10;
-      btn.color = rgb(
-        wave(0, 255, t),
-        wave(0, 255, t + 2),
-        wave(0, 255, t + 4),
-      );
-      btn.scale = vec2(1.2);
-    }, () => {
-      btn.scale = vec2(1);
-      btn.color = rgb();
-    });
-  }
+let playerModel;
 
 k.scene("end", () => {
-  add([
-      text("Game over. Your score is: " + scoreLabel.text, { size: 46 }),
-      pos(width() / 2, height() / 2),
-      origin("center"),
-      fixed(),
-  ]);
-  addButton("Start", vec2(width() / 2, (height() / 2) + 96) , () => go("battle"));
+	endScene(playerModel);
 });
 
-
-k.scene("start", () => {
-
-add([
-		text("Play the game: Currant Julep", { size: 26 }),
-		pos(width() / 2, height() / 2),
-		origin("center"),
-		fixed(),
-	]);
-  addButton("Play", vec2(width() / 2, (height() / 2) + 76), () => go("battle"));
-  addButton("Exit", vec2(width() / 2, (height() / 2) + 146), () => go("end"));
-});
+k.scene("start", startScene);
 
 k.scene("battle", () => {
 
@@ -74,162 +40,27 @@ k.scene("battle", () => {
 		"game",
 		"ui",
 	], "game");
+   
+	showMission();
 
-  function late(t) {
-		let timer = 0;
-		return {
-			add() {
-				this.hidden = true;
-			},
-			update() {
-				timer += dt();
-				if (timer >= t) {
-					this.hidden = false;
-				}
-			},
-		};
-	}
+  const player = getPlayer("currant");
+  playerModel = new PlayerModel(name, width()/2, height()/2, player);
+	mp = new Multiplayer(playerModel);
 
-  function addExplode(p, n, rad, size) {
-		for (let i = 0; i < n; i++) {
-			wait(rand(n * 0.1), () => {
-				for (let i = 0; i < 2; i++) {
-					add([
-						pos(p.add(rand(vec2(-rad), vec2(rad)))),
-						rect(4, 4),
-						outline(4),
-						scale(1 * size, 1 * size),
-						lifespan(0.1),
-						grow(rand(48, 72) * size),
-						origin("center"),
-            fixed()
-					]);
-				}
-			});
-		}
-	}
-
-  function grow(rate) {
-		return {
-			update() {
-				const n = rate * dt();
-				this.scale.x += n;
-				this.scale.y += n;
-			},
-		};
-	}
-
-  function spawnBullet(p) {
-    add([
-			rect(12, 48),
-			area(),
-			pos(p),
-			origin("center"),
-			color(127, 127, 255),
-			outline(4),
-			move(mouseWorldPos().angle(player.pos), BULLET_SPEED),
-			cleanup(),
-			"bullet",
-		]);
-	}
-
-  add([
-		text("KILL", { size: 60 }),
-		pos(width()-220, 40),
-		// origin("topright"),
-		lifespan(1),
-		fixed(),
-		layer("ui"),
-	]);
-
-	add([
-		text("THE", { size: 60 }),
-		pos(width()-220, 40),
-		lifespan(2),
-		late(1),
-		fixed(),
-		layer("ui"),
-	]);
-
-	add([
-		text('JULEP', { size: 60 }),
-		pos(width()-220, 40),
-		lifespan(4),
-		late(2),
-		fixed(),
-		layer("ui"),
-	]);
-
-  
-  scoreLabel = add([
-      text(score, 2),
-      pos(12, 12),
-      fixed(),
-      z(100),
-      layer("ui"),
-  ]);
-  
-  const playerNameHud = add([
-    text(mp.name, {
-      size: 24
-    }),
-    pos(12, height() - 36),
-    fixed(),
-    z(100),
-  ]);
-
+	showScoreLabel(playerModel.getScore());
+    
   // spawn food
   spawnFood();
 
-  // Init player
-  const player = getPlayer("currant");
-  const playedModel = new PlayerModel(width()/2, height()/2, player);
-  window.p1 = playedModel;
+	showName(playerModel);
 
-  function spawnEnemy() {
-		// add enemy obj
-		const enemy = add([
-			sprite("googoly"),
-      pos(rand(width()), rand(height())),
-      area(),
-      origin("top"),
-      'enemy'
-		]);
+  (function spawner() {
+		spawnEnemy(playerModel);
+		wait(rand(1, 3), spawner);
+	})();
 
-    enemy.action(() => {
-      enemy.moveTo(player.pos, 80);
-    });
-
-    enemy.collides("bullet", (b) => {
-      destroy(enemy);
-      destroy(b);
-      score += 1;
-      scoreLabel.text = score;
-      addKaboom(enemy.pos);
-    });
-
-		// wait a random amount of time to spawn next tree
-		wait(rand(0.5, 1.5), spawnEnemy);
-	}
-  // start spawning enemies
-  spawnEnemy();
-
-  // move
-  setMoveAction(playedModel);
-
-  keyPress("space", () => {
-		spawnBullet(player.pos.sub(16, 0));
-		spawnBullet(player.pos.add(16, 0));
-		// play("shoot", {
-		// 	volume: 0.3,
-		// 	detune: rand(-1200, 1200),
-		// });
-	});
-
-  keyPress("q", () => {
-    go("end");
-  });
-    
+	setControls(playerModel);
+      
   player.collides("food", (food) => {
     destroy(food);
     addKaboom(player.pos);
@@ -248,8 +79,6 @@ k.scene("battle", () => {
 			go("end");
 		});
 	});
-
-
 });
 
 go("start");

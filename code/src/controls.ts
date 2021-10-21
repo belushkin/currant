@@ -1,23 +1,23 @@
 import k from "./../kaboom";
 import PlayerModel from "./playerModel";
 
-export function setMoveAction(playerModel: PlayerModel) {
+export default function setControls(playerModel: PlayerModel) {
   k.action(() => {
     
     let pad = vec2(0,0);
     const base = vec2(0,0);
 
-    if (k.keyIsDown("left")) {
+    if (k.keyIsDown("left") || k.keyIsDown("a")) {
       pad.x -= 1;
     } 
-    if (k.keyIsDown("right")) {
+    if (k.keyIsDown("right") || k.keyIsDown("d")) {
       pad.x += 1;
     }
 
-    if (k.keyIsDown("down")) {
+    if (k.keyIsDown("down") || k.keyIsDown("s")) {
       pad.y += 1;
     } 
-    if (k.keyIsDown("up")) {
+    if (k.keyIsDown("up") || k.keyIsDown("w")) {
       pad.y -= 1;
     }
 
@@ -36,7 +36,21 @@ export function setMoveAction(playerModel: PlayerModel) {
 
     camPos(playerModel.getPos());
   });
-/*
+
+  keyPress("space", () => {
+    const angle = mouseWorldPos().angle(playerModel.getPos());
+    playerModel.shot(angle);
+    // play("shoot", {
+    // 	volume: 0.3,
+    // 	detune: rand(-1200, 1200),
+    // });
+  });
+
+  keyPress("q", () => {
+    go("end");
+  });
+
+  /*
   player.collides("wall", (food) => {
     shake(12);
   });

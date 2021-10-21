@@ -1,4 +1,3 @@
-import Chance from "chance"
 import PlayerModel from "./playerModel"
 
 export default class Multiplayer {
@@ -6,16 +5,17 @@ export default class Multiplayer {
   
   // Our uuid
   uuid: string
+  private myslef: PlayerModel;
 
   players: Map<string, PlayerModel>
 
   name: string
 
-  constructor() {
+  constructor(myslef: PlayerModel) {
     const protocol = location.protocol === "https:" ? "wss" : "ws"
     const url = `${protocol}://${location.host}/multiplayer`;
-    const chance = new Chance();
-    this.name = chance.animal();
+    this.myslef = myslef;
+    this.name = myslef.name;
     console.log("My name is", this.name);
     console.log("Connecting to ws" , url);
     this.ws = new WebSocket(url)

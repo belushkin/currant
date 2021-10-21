@@ -295,22 +295,22 @@
         __name(ReplaceToken, "ReplaceToken");
         ReplaceToken.prototype = {
           replacers: {
-            "#": function(chance2) {
-              return chance2.character({ pool: NUMBERS });
+            "#": function(chance3) {
+              return chance3.character({ pool: NUMBERS });
             },
-            "A": function(chance2) {
-              return chance2.character({ pool: CHARS_UPPER });
+            "A": function(chance3) {
+              return chance3.character({ pool: CHARS_UPPER });
             },
-            "a": function(chance2) {
-              return chance2.character({ pool: CHARS_LOWER });
+            "a": function(chance3) {
+              return chance3.character({ pool: CHARS_LOWER });
             }
           },
-          substitute: function(chance2) {
+          substitute: function(chance3) {
             var replacer = this.replacers[this.c];
             if (!replacer) {
               throw new Error('Invalid replacement character: "' + this.c + '".');
             }
-            return replacer(chance2);
+            return replacer(chance3);
           }
         };
         function parseTemplate(template) {
@@ -755,21 +755,21 @@
         };
         Chance2.prototype.name = function(options) {
           options = initOptions(options);
-          var first = this.first(options), last = this.last(options), name;
+          var first = this.first(options), last = this.last(options), name2;
           if (options.middle) {
-            name = first + " " + this.first(options) + " " + last;
+            name2 = first + " " + this.first(options) + " " + last;
           } else if (options.middle_initial) {
-            name = first + " " + this.character({ alpha: true, casing: "upper" }) + ". " + last;
+            name2 = first + " " + this.character({ alpha: true, casing: "upper" }) + ". " + last;
           } else {
-            name = first + " " + last;
+            name2 = first + " " + last;
           }
           if (options.prefix) {
-            name = this.prefix(options) + " " + name;
+            name2 = this.prefix(options) + " " + name2;
           }
           if (options.suffix) {
-            name = name + " " + this.suffix(options);
+            name2 = name2 + " " + this.suffix(options);
           }
-          return name;
+          return name2;
         };
         Chance2.prototype.name_prefixes = function(gender) {
           gender = gender || "all";
@@ -1623,12 +1623,12 @@
         };
         Chance2.prototype.cf = function(options) {
           options = options || {};
-          var gender = !!options.gender ? options.gender : this.gender(), first = !!options.first ? options.first : this.first({ gender, nationality: "it" }), last = !!options.last ? options.last : this.last({ nationality: "it" }), birthday = !!options.birthday ? options.birthday : this.birthday(), city = !!options.city ? options.city : this.pickone(["A", "B", "C", "D", "E", "F", "G", "H", "I", "L", "M", "Z"]) + this.pad(this.natural({ max: 999 }), 3), cf = [], name_generator = /* @__PURE__ */ __name(function(name, isLast) {
+          var gender = !!options.gender ? options.gender : this.gender(), first = !!options.first ? options.first : this.first({ gender, nationality: "it" }), last = !!options.last ? options.last : this.last({ nationality: "it" }), birthday = !!options.birthday ? options.birthday : this.birthday(), city = !!options.city ? options.city : this.pickone(["A", "B", "C", "D", "E", "F", "G", "H", "I", "L", "M", "Z"]) + this.pad(this.natural({ max: 999 }), 3), cf = [], name_generator = /* @__PURE__ */ __name(function(name2, isLast) {
             var temp, return_value = [];
-            if (name.length < 3) {
-              return_value = name.split("").concat("XXX".split("")).splice(0, 3);
+            if (name2.length < 3) {
+              return_value = name2.split("").concat("XXX".split("")).splice(0, 3);
             } else {
-              temp = name.toUpperCase().split("").map(function(c) {
+              temp = name2.toUpperCase().split("").map(function(c) {
                 return "BCDFGHJKLMNPRSTVWZ".indexOf(c) !== -1 ? c : void 0;
               }).join("");
               if (temp.length > 3) {
@@ -1640,7 +1640,7 @@
               }
               if (temp.length < 3) {
                 return_value = temp;
-                temp = name.toUpperCase().split("").map(function(c) {
+                temp = name2.toUpperCase().split("").map(function(c) {
                   return "AEIOU".indexOf(c) !== -1 ? c : void 0;
                 }).join("").substr(0, 3 - return_value.length);
               }
@@ -7675,8 +7675,8 @@
           return target;
         }
         __name(copyObject, "copyObject");
-        Chance2.prototype.get = function(name) {
-          return copyObject(data[name]);
+        Chance2.prototype.get = function(name2) {
+          return copyObject(data[name2]);
         };
         Chance2.prototype.mac_address = function(options) {
           options = initOptions(options);
@@ -7738,11 +7738,11 @@
           }
           return fl + this.character({ alpha: true, casing: "upper" }) + this.character({ alpha: true, casing: "upper" }) + this.character({ alpha: true, casing: "upper" });
         };
-        Chance2.prototype.set = function(name, values) {
-          if (typeof name === "string") {
-            data[name] = values;
+        Chance2.prototype.set = function(name2, values) {
+          if (typeof name2 === "string") {
+            data[name2] = values;
           } else {
-            data = copyObject(name, data);
+            data = copyObject(name2, data);
           }
         };
         Chance2.prototype.tv = function(options) {
@@ -8059,6 +8059,391 @@
           window.chance = new Chance2();
         }
       })();
+    }
+  });
+
+  // node_modules/events/events.js
+  var require_events = __commonJS({
+    "node_modules/events/events.js"(exports, module) {
+      "use strict";
+      var R = typeof Reflect === "object" ? Reflect : null;
+      var ReflectApply = R && typeof R.apply === "function" ? R.apply : /* @__PURE__ */ __name(function ReflectApply2(target, receiver, args) {
+        return Function.prototype.apply.call(target, receiver, args);
+      }, "ReflectApply");
+      var ReflectOwnKeys;
+      if (R && typeof R.ownKeys === "function") {
+        ReflectOwnKeys = R.ownKeys;
+      } else if (Object.getOwnPropertySymbols) {
+        ReflectOwnKeys = /* @__PURE__ */ __name(function ReflectOwnKeys2(target) {
+          return Object.getOwnPropertyNames(target).concat(Object.getOwnPropertySymbols(target));
+        }, "ReflectOwnKeys");
+      } else {
+        ReflectOwnKeys = /* @__PURE__ */ __name(function ReflectOwnKeys2(target) {
+          return Object.getOwnPropertyNames(target);
+        }, "ReflectOwnKeys");
+      }
+      function ProcessEmitWarning(warning) {
+        if (console && console.warn)
+          console.warn(warning);
+      }
+      __name(ProcessEmitWarning, "ProcessEmitWarning");
+      var NumberIsNaN = Number.isNaN || /* @__PURE__ */ __name(function NumberIsNaN2(value) {
+        return value !== value;
+      }, "NumberIsNaN");
+      function EventEmitter2() {
+        EventEmitter2.init.call(this);
+      }
+      __name(EventEmitter2, "EventEmitter");
+      module.exports = EventEmitter2;
+      module.exports.once = once;
+      EventEmitter2.EventEmitter = EventEmitter2;
+      EventEmitter2.prototype._events = void 0;
+      EventEmitter2.prototype._eventsCount = 0;
+      EventEmitter2.prototype._maxListeners = void 0;
+      var defaultMaxListeners = 10;
+      function checkListener(listener) {
+        if (typeof listener !== "function") {
+          throw new TypeError('The "listener" argument must be of type Function. Received type ' + typeof listener);
+        }
+      }
+      __name(checkListener, "checkListener");
+      Object.defineProperty(EventEmitter2, "defaultMaxListeners", {
+        enumerable: true,
+        get: function() {
+          return defaultMaxListeners;
+        },
+        set: function(arg) {
+          if (typeof arg !== "number" || arg < 0 || NumberIsNaN(arg)) {
+            throw new RangeError('The value of "defaultMaxListeners" is out of range. It must be a non-negative number. Received ' + arg + ".");
+          }
+          defaultMaxListeners = arg;
+        }
+      });
+      EventEmitter2.init = function() {
+        if (this._events === void 0 || this._events === Object.getPrototypeOf(this)._events) {
+          this._events = Object.create(null);
+          this._eventsCount = 0;
+        }
+        this._maxListeners = this._maxListeners || void 0;
+      };
+      EventEmitter2.prototype.setMaxListeners = /* @__PURE__ */ __name(function setMaxListeners(n) {
+        if (typeof n !== "number" || n < 0 || NumberIsNaN(n)) {
+          throw new RangeError('The value of "n" is out of range. It must be a non-negative number. Received ' + n + ".");
+        }
+        this._maxListeners = n;
+        return this;
+      }, "setMaxListeners");
+      function _getMaxListeners(that) {
+        if (that._maxListeners === void 0)
+          return EventEmitter2.defaultMaxListeners;
+        return that._maxListeners;
+      }
+      __name(_getMaxListeners, "_getMaxListeners");
+      EventEmitter2.prototype.getMaxListeners = /* @__PURE__ */ __name(function getMaxListeners() {
+        return _getMaxListeners(this);
+      }, "getMaxListeners");
+      EventEmitter2.prototype.emit = /* @__PURE__ */ __name(function emit(type) {
+        var args = [];
+        for (var i = 1; i < arguments.length; i++)
+          args.push(arguments[i]);
+        var doError = type === "error";
+        var events = this._events;
+        if (events !== void 0)
+          doError = doError && events.error === void 0;
+        else if (!doError)
+          return false;
+        if (doError) {
+          var er2;
+          if (args.length > 0)
+            er2 = args[0];
+          if (er2 instanceof Error) {
+            throw er2;
+          }
+          var err = new Error("Unhandled error." + (er2 ? " (" + er2.message + ")" : ""));
+          err.context = er2;
+          throw err;
+        }
+        var handler = events[type];
+        if (handler === void 0)
+          return false;
+        if (typeof handler === "function") {
+          ReflectApply(handler, this, args);
+        } else {
+          var len = handler.length;
+          var listeners = arrayClone(handler, len);
+          for (var i = 0; i < len; ++i)
+            ReflectApply(listeners[i], this, args);
+        }
+        return true;
+      }, "emit");
+      function _addListener(target, type, listener, prepend) {
+        var m;
+        var events;
+        var existing;
+        checkListener(listener);
+        events = target._events;
+        if (events === void 0) {
+          events = target._events = Object.create(null);
+          target._eventsCount = 0;
+        } else {
+          if (events.newListener !== void 0) {
+            target.emit("newListener", type, listener.listener ? listener.listener : listener);
+            events = target._events;
+          }
+          existing = events[type];
+        }
+        if (existing === void 0) {
+          existing = events[type] = listener;
+          ++target._eventsCount;
+        } else {
+          if (typeof existing === "function") {
+            existing = events[type] = prepend ? [listener, existing] : [existing, listener];
+          } else if (prepend) {
+            existing.unshift(listener);
+          } else {
+            existing.push(listener);
+          }
+          m = _getMaxListeners(target);
+          if (m > 0 && existing.length > m && !existing.warned) {
+            existing.warned = true;
+            var w = new Error("Possible EventEmitter memory leak detected. " + existing.length + " " + String(type) + " listeners added. Use emitter.setMaxListeners() to increase limit");
+            w.name = "MaxListenersExceededWarning";
+            w.emitter = target;
+            w.type = type;
+            w.count = existing.length;
+            ProcessEmitWarning(w);
+          }
+        }
+        return target;
+      }
+      __name(_addListener, "_addListener");
+      EventEmitter2.prototype.addListener = /* @__PURE__ */ __name(function addListener(type, listener) {
+        return _addListener(this, type, listener, false);
+      }, "addListener");
+      EventEmitter2.prototype.on = EventEmitter2.prototype.addListener;
+      EventEmitter2.prototype.prependListener = /* @__PURE__ */ __name(function prependListener(type, listener) {
+        return _addListener(this, type, listener, true);
+      }, "prependListener");
+      function onceWrapper() {
+        if (!this.fired) {
+          this.target.removeListener(this.type, this.wrapFn);
+          this.fired = true;
+          if (arguments.length === 0)
+            return this.listener.call(this.target);
+          return this.listener.apply(this.target, arguments);
+        }
+      }
+      __name(onceWrapper, "onceWrapper");
+      function _onceWrap(target, type, listener) {
+        var state = { fired: false, wrapFn: void 0, target, type, listener };
+        var wrapped = onceWrapper.bind(state);
+        wrapped.listener = listener;
+        state.wrapFn = wrapped;
+        return wrapped;
+      }
+      __name(_onceWrap, "_onceWrap");
+      EventEmitter2.prototype.once = /* @__PURE__ */ __name(function once2(type, listener) {
+        checkListener(listener);
+        this.on(type, _onceWrap(this, type, listener));
+        return this;
+      }, "once");
+      EventEmitter2.prototype.prependOnceListener = /* @__PURE__ */ __name(function prependOnceListener(type, listener) {
+        checkListener(listener);
+        this.prependListener(type, _onceWrap(this, type, listener));
+        return this;
+      }, "prependOnceListener");
+      EventEmitter2.prototype.removeListener = /* @__PURE__ */ __name(function removeListener(type, listener) {
+        var list, events, position, i, originalListener;
+        checkListener(listener);
+        events = this._events;
+        if (events === void 0)
+          return this;
+        list = events[type];
+        if (list === void 0)
+          return this;
+        if (list === listener || list.listener === listener) {
+          if (--this._eventsCount === 0)
+            this._events = Object.create(null);
+          else {
+            delete events[type];
+            if (events.removeListener)
+              this.emit("removeListener", type, list.listener || listener);
+          }
+        } else if (typeof list !== "function") {
+          position = -1;
+          for (i = list.length - 1; i >= 0; i--) {
+            if (list[i] === listener || list[i].listener === listener) {
+              originalListener = list[i].listener;
+              position = i;
+              break;
+            }
+          }
+          if (position < 0)
+            return this;
+          if (position === 0)
+            list.shift();
+          else {
+            spliceOne(list, position);
+          }
+          if (list.length === 1)
+            events[type] = list[0];
+          if (events.removeListener !== void 0)
+            this.emit("removeListener", type, originalListener || listener);
+        }
+        return this;
+      }, "removeListener");
+      EventEmitter2.prototype.off = EventEmitter2.prototype.removeListener;
+      EventEmitter2.prototype.removeAllListeners = /* @__PURE__ */ __name(function removeAllListeners(type) {
+        var listeners, events, i;
+        events = this._events;
+        if (events === void 0)
+          return this;
+        if (events.removeListener === void 0) {
+          if (arguments.length === 0) {
+            this._events = Object.create(null);
+            this._eventsCount = 0;
+          } else if (events[type] !== void 0) {
+            if (--this._eventsCount === 0)
+              this._events = Object.create(null);
+            else
+              delete events[type];
+          }
+          return this;
+        }
+        if (arguments.length === 0) {
+          var keys = Object.keys(events);
+          var key;
+          for (i = 0; i < keys.length; ++i) {
+            key = keys[i];
+            if (key === "removeListener")
+              continue;
+            this.removeAllListeners(key);
+          }
+          this.removeAllListeners("removeListener");
+          this._events = Object.create(null);
+          this._eventsCount = 0;
+          return this;
+        }
+        listeners = events[type];
+        if (typeof listeners === "function") {
+          this.removeListener(type, listeners);
+        } else if (listeners !== void 0) {
+          for (i = listeners.length - 1; i >= 0; i--) {
+            this.removeListener(type, listeners[i]);
+          }
+        }
+        return this;
+      }, "removeAllListeners");
+      function _listeners(target, type, unwrap) {
+        var events = target._events;
+        if (events === void 0)
+          return [];
+        var evlistener = events[type];
+        if (evlistener === void 0)
+          return [];
+        if (typeof evlistener === "function")
+          return unwrap ? [evlistener.listener || evlistener] : [evlistener];
+        return unwrap ? unwrapListeners(evlistener) : arrayClone(evlistener, evlistener.length);
+      }
+      __name(_listeners, "_listeners");
+      EventEmitter2.prototype.listeners = /* @__PURE__ */ __name(function listeners(type) {
+        return _listeners(this, type, true);
+      }, "listeners");
+      EventEmitter2.prototype.rawListeners = /* @__PURE__ */ __name(function rawListeners(type) {
+        return _listeners(this, type, false);
+      }, "rawListeners");
+      EventEmitter2.listenerCount = function(emitter2, type) {
+        if (typeof emitter2.listenerCount === "function") {
+          return emitter2.listenerCount(type);
+        } else {
+          return listenerCount.call(emitter2, type);
+        }
+      };
+      EventEmitter2.prototype.listenerCount = listenerCount;
+      function listenerCount(type) {
+        var events = this._events;
+        if (events !== void 0) {
+          var evlistener = events[type];
+          if (typeof evlistener === "function") {
+            return 1;
+          } else if (evlistener !== void 0) {
+            return evlistener.length;
+          }
+        }
+        return 0;
+      }
+      __name(listenerCount, "listenerCount");
+      EventEmitter2.prototype.eventNames = /* @__PURE__ */ __name(function eventNames() {
+        return this._eventsCount > 0 ? ReflectOwnKeys(this._events) : [];
+      }, "eventNames");
+      function arrayClone(arr, n) {
+        var copy = new Array(n);
+        for (var i = 0; i < n; ++i)
+          copy[i] = arr[i];
+        return copy;
+      }
+      __name(arrayClone, "arrayClone");
+      function spliceOne(list, index) {
+        for (; index + 1 < list.length; index++)
+          list[index] = list[index + 1];
+        list.pop();
+      }
+      __name(spliceOne, "spliceOne");
+      function unwrapListeners(arr) {
+        var ret = new Array(arr.length);
+        for (var i = 0; i < ret.length; ++i) {
+          ret[i] = arr[i].listener || arr[i];
+        }
+        return ret;
+      }
+      __name(unwrapListeners, "unwrapListeners");
+      function once(emitter2, name2) {
+        return new Promise(function(resolve, reject) {
+          function errorListener(err) {
+            emitter2.removeListener(name2, resolver);
+            reject(err);
+          }
+          __name(errorListener, "errorListener");
+          function resolver() {
+            if (typeof emitter2.removeListener === "function") {
+              emitter2.removeListener("error", errorListener);
+            }
+            resolve([].slice.call(arguments));
+          }
+          __name(resolver, "resolver");
+          ;
+          eventTargetAgnosticAddListener(emitter2, name2, resolver, { once: true });
+          if (name2 !== "error") {
+            addErrorHandlerIfEventEmitter(emitter2, errorListener, { once: true });
+          }
+        });
+      }
+      __name(once, "once");
+      function addErrorHandlerIfEventEmitter(emitter2, handler, flags) {
+        if (typeof emitter2.on === "function") {
+          eventTargetAgnosticAddListener(emitter2, "error", handler, flags);
+        }
+      }
+      __name(addErrorHandlerIfEventEmitter, "addErrorHandlerIfEventEmitter");
+      function eventTargetAgnosticAddListener(emitter2, name2, listener, flags) {
+        if (typeof emitter2.on === "function") {
+          if (flags.once) {
+            emitter2.once(name2, listener);
+          } else {
+            emitter2.on(name2, listener);
+          }
+        } else if (typeof emitter2.addEventListener === "function") {
+          emitter2.addEventListener(name2, /* @__PURE__ */ __name(function wrapListener(arg) {
+            if (flags.once) {
+              emitter2.removeEventListener(name2, wrapListener);
+            }
+            listener(arg);
+          }, "wrapListener"));
+        } else {
+          throw new TypeError('The "emitter" argument must be of type EventEmitter. Received type ' + typeof emitter2);
+        }
+      }
+      __name(eventTargetAgnosticAddListener, "eventTargetAgnosticAddListener");
     }
   });
 
@@ -10415,6 +10800,9 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
   });
   var kaboom_default2 = k;
 
+  // code/main.js
+  var import_chance = __toModule(require_chance());
+
   // code/src/food.js
   loadSprite("apple", "sprites/apple.png");
   function spawnFood() {
@@ -10478,47 +10866,56 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
   }
   __name(getPlayer, "getPlayer");
 
-  // code/src/moveModel.ts
-  function setMoveAction(playerModel) {
-    kaboom_default2.action(() => {
-      let pad = vec2(0, 0);
-      const base = vec2(0, 0);
-      if (kaboom_default2.keyIsDown("left")) {
-        pad.x -= 1;
-      }
-      if (kaboom_default2.keyIsDown("right")) {
-        pad.x += 1;
-      }
-      if (kaboom_default2.keyIsDown("down")) {
-        pad.y += 1;
-      }
-      if (kaboom_default2.keyIsDown("up")) {
-        pad.y -= 1;
-      }
-      if (kaboom_default2.mouseIsDown()) {
-        pad = kaboom_default2.mouseWorldPos().sub(playerModel.getPos());
-        if (pad.len() < 100) {
-          pad = vec2(0, 0);
+  // code/src/ui/showMission.ts
+  function late(t) {
+    let timer = 0;
+    return {
+      add() {
+        this.hidden = true;
+      },
+      update() {
+        timer += dt();
+        if (timer >= t) {
+          this.hidden = false;
         }
       }
-      if (pad.len() > 0) {
-        playerModel.setMove(pad.angle(base));
-      } else {
-        playerModel.stop();
-      }
-      camPos(playerModel.getPos());
-    });
+    };
   }
-  __name(setMoveAction, "setMoveAction");
+  __name(late, "late");
+  function showMission() {
+    kaboom_default2.add([
+      text("KILL", { size: 60 }),
+      pos(width() - 220, 40),
+      lifespan(1),
+      fixed(),
+      layer("ui")
+    ]);
+    kaboom_default2.add([
+      text("THE", { size: 60 }),
+      pos(width() - 220, 40),
+      lifespan(2),
+      late(1),
+      fixed(),
+      layer("ui")
+    ]);
+    kaboom_default2.add([
+      text("JULEP", { size: 60 }),
+      pos(width() - 220, 40),
+      lifespan(4),
+      late(2),
+      fixed(),
+      layer("ui")
+    ]);
+  }
+  __name(showMission, "showMission");
 
   // code/src/multiplayer.ts
-  var import_chance = __toModule(require_chance());
   var Multiplayer = class {
-    constructor() {
+    constructor(myslef) {
       const protocol = location.protocol === "https:" ? "wss" : "ws";
       const url = `${protocol}://${location.host}/multiplayer`;
-      const chance2 = new import_chance.default();
-      this.name = chance2.animal();
+      this.myslef = myslef;
+      this.name = myslef.name;
       console.log("My name is", this.name);
       console.log("Connecting to ws", url);
       this.ws = new WebSocket(url);
@@ -10540,28 +10937,66 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
     }
     onOpen(event) {
     }
-    join(name) {
+    join(name2) {
       const cmd = {
-        name
+        name: name2
       };
       this.cmd("name", cmd);
     }
-    cmd(name, payload) {
-      payload.commandName = name;
+    cmd(name2, payload) {
+      payload.commandName = name2;
       this.ws.send(JSON.stringify(payload));
     }
   };
   __name(Multiplayer, "Multiplayer");
 
+  // code/src/shot.ts
+  var BULLET_SPEED = 1200;
+  function spawnBullet(source, angle) {
+    add([
+      rect(12, 48),
+      area(),
+      pos(source),
+      kaboom_default2.origin("center"),
+      color(127, 127, 255),
+      outline(4),
+      move(angle, BULLET_SPEED),
+      cleanup(),
+      "bullet"
+    ]);
+  }
+  __name(spawnBullet, "spawnBullet");
+  function shot(source, angle) {
+    spawnBullet(source.sub(16, 0), angle);
+    spawnBullet(source.add(16, 0), angle);
+  }
+  __name(shot, "shot");
+
+  // code/src/emitter.ts
+  var import_events = __toModule(require_events());
+  var emitter = new import_events.default();
+  var emitter_default = emitter;
+
+  // code/src/events/playerScoreUpdated.ts
+  var PlayerScoreUpdated = class {
+    constructor(player, score) {
+      this.player = player;
+      this.score = score;
+    }
+  };
+  __name(PlayerScoreUpdated, "PlayerScoreUpdated");
+
   // code/src/playerModel.ts
   var PlayerModel = class {
-    constructor(x, y, player) {
+    constructor(name2, x, y, player) {
       this.speed = 480;
       this.move = vec2(0, 0);
       this.pos = vec2(x, y);
       this.gameObject = player;
       this.setPosition(x, y);
       this.setMove(0, 0);
+      this.score = 0;
+      this.name = name2;
     }
     setPosition(x, y) {
       this.pos.x = x;
@@ -10581,25 +11016,38 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
     stop() {
       this.setMove(this.move.x, 0);
     }
+    shot(angle) {
+      shot(this.getPos(), angle);
+    }
     getPos() {
       return this.gameObject.pos;
+    }
+    setScore(newScore) {
+      this.score = newScore;
+      this.emitScore();
+    }
+    emitScore() {
+      emitter_default.emit("player.score.updated", new PlayerScoreUpdated(this, this.score));
+    }
+    incScore() {
+      this.score++;
+      this.emitScore();
+    }
+    getScore() {
+      return this.score;
     }
   };
   __name(PlayerModel, "PlayerModel");
 
-  // code/main.js
-  loadSprite("googoly", "sprites/googoly.png");
-  var mp = new Multiplayer();
-  var BULLET_SPEED = 1200;
-  var score = 0;
-  var scoreLabel;
+  // code/src/ui/addButton.ts
   function addButton(txt, p, f) {
-    const btn = add([
-      text(txt, 8),
+    const btn = kaboom_default2.add([
+      kaboom_default2.text(txt),
       pos(p),
       area({ cursor: "pointer" }),
       scale(1),
-      origin("center")
+      kaboom_default2.origin("center"),
+      color()
     ]);
     btn.clicks(f);
     btn.hovers(() => {
@@ -10608,164 +11056,187 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
       btn.scale = vec2(1.2);
     }, () => {
       btn.scale = vec2(1);
-      btn.color = rgb();
+      btn.color = rgb(0, 0, 0);
     });
   }
   __name(addButton, "addButton");
-  kaboom_default2.scene("end", () => {
-    add([
-      text("Game over. Your score is: " + scoreLabel.text, { size: 46 }),
-      pos(width() / 2, height() / 2),
-      origin("center"),
-      fixed()
-    ]);
-    addButton("Start", vec2(width() / 2, height() / 2 + 96), () => go("battle"));
-  });
-  kaboom_default2.scene("start", () => {
-    add([
+
+  // code/src/scenes/start.ts
+  function startScene() {
+    kaboom_default2.add([
       text("Play the game: Currant Julep", { size: 26 }),
       pos(width() / 2, height() / 2),
-      origin("center"),
+      kaboom_default2.origin("center"),
       fixed()
     ]);
     addButton("Play", vec2(width() / 2, height() / 2 + 76), () => go("battle"));
     addButton("Exit", vec2(width() / 2, height() / 2 + 146), () => go("end"));
-  });
-  kaboom_default2.scene("battle", () => {
-    layers([
-      "game",
-      "ui"
-    ], "game");
-    function late(t) {
-      let timer = 0;
-      return {
-        add() {
-          this.hidden = true;
-        },
-        update() {
-          timer += dt();
-          if (timer >= t) {
-            this.hidden = false;
-          }
-        }
-      };
-    }
-    __name(late, "late");
-    function addExplode(p, n, rad, size) {
-      for (let i = 0; i < n; i++) {
-        wait(rand(n * 0.1), () => {
-          for (let i2 = 0; i2 < 2; i2++) {
-            add([
-              pos(p.add(rand(vec2(-rad), vec2(rad)))),
-              rect(4, 4),
-              outline(4),
-              scale(1 * size, 1 * size),
-              lifespan(0.1),
-              grow(rand(48, 72) * size),
-              origin("center"),
-              fixed()
-            ]);
-          }
-        });
-      }
-    }
-    __name(addExplode, "addExplode");
-    function grow(rate) {
-      return {
-        update() {
-          const n = rate * dt();
-          this.scale.x += n;
-          this.scale.y += n;
-        }
-      };
-    }
-    __name(grow, "grow");
-    function spawnBullet(p) {
-      add([
-        rect(12, 48),
-        area(),
-        pos(p),
-        origin("center"),
-        color(127, 127, 255),
-        outline(4),
-        move(mouseWorldPos().angle(player.pos), BULLET_SPEED),
-        cleanup(),
-        "bullet"
-      ]);
-    }
-    __name(spawnBullet, "spawnBullet");
+  }
+  __name(startScene, "startScene");
+
+  // code/src/scenes/end.ts
+  function endScene(player) {
     add([
-      text("KILL", { size: 60 }),
-      pos(width() - 220, 40),
-      lifespan(1),
-      fixed(),
-      layer("ui")
+      text("Game over. Your score is: " + player.getScore(), { size: 46 }),
+      pos(width() / 2, height() / 2),
+      kaboom_default2.origin("center"),
+      fixed()
     ]);
-    add([
-      text("THE", { size: 60 }),
-      pos(width() - 220, 40),
-      lifespan(2),
-      late(1),
-      fixed(),
-      layer("ui")
-    ]);
-    add([
-      text("JULEP", { size: 60 }),
-      pos(width() - 220, 40),
-      lifespan(4),
-      late(2),
-      fixed(),
-      layer("ui")
-    ]);
-    scoreLabel = add([
-      text(score, 2),
+    addButton("Start", vec2(width() / 2, height() / 2 + 96), () => go("battle"));
+  }
+  __name(endScene, "endScene");
+
+  // code/src/ui/score.ts
+  function showScoreLabel(initScore) {
+    const scoreLabel = kaboom_default2.add([
+      text(initScore.toString()),
       pos(12, 12),
       fixed(),
       z(100),
       layer("ui")
     ]);
-    const playerNameHud = add([
-      text(mp.name, {
+    emitter_default.on("player.score.updated", (event) => {
+      scoreLabel.text = event.score.toString();
+    });
+    return (score) => {
+      scoreLabel.text = score.toString();
+    };
+  }
+  __name(showScoreLabel, "showScoreLabel");
+
+  // code/src/controls.ts
+  function setControls(playerModel2) {
+    kaboom_default2.action(() => {
+      let pad = vec2(0, 0);
+      const base = vec2(0, 0);
+      if (kaboom_default2.keyIsDown("left") || kaboom_default2.keyIsDown("a")) {
+        pad.x -= 1;
+      }
+      if (kaboom_default2.keyIsDown("right") || kaboom_default2.keyIsDown("d")) {
+        pad.x += 1;
+      }
+      if (kaboom_default2.keyIsDown("down") || kaboom_default2.keyIsDown("s")) {
+        pad.y += 1;
+      }
+      if (kaboom_default2.keyIsDown("up") || kaboom_default2.keyIsDown("w")) {
+        pad.y -= 1;
+      }
+      if (kaboom_default2.mouseIsDown()) {
+        pad = kaboom_default2.mouseWorldPos().sub(playerModel2.getPos());
+        if (pad.len() < 100) {
+          pad = vec2(0, 0);
+        }
+      }
+      if (pad.len() > 0) {
+        playerModel2.setMove(pad.angle(base));
+      } else {
+        playerModel2.stop();
+      }
+      camPos(playerModel2.getPos());
+    });
+    keyPress("space", () => {
+      const angle = mouseWorldPos().angle(playerModel2.getPos());
+      playerModel2.shot(angle);
+    });
+    keyPress("q", () => {
+      go("end");
+    });
+  }
+  __name(setControls, "setControls");
+
+  // code/src/ui/name.ts
+  function showName(player) {
+    kaboom_default2.add([
+      kaboom_default2.layer("ui"),
+      text(player.name, {
         size: 24
       }),
       pos(12, height() - 36),
       fixed(),
       z(100)
     ]);
-    spawnFood();
-    const player = getPlayer("currant");
-    const playedModel = new PlayerModel(width() / 2, height() / 2, player);
-    window.p1 = playedModel;
-    function spawnEnemy() {
-      const enemy = add([
-        sprite("googoly"),
-        pos(rand(width()), rand(height())),
-        area(),
-        origin("top"),
-        "enemy"
-      ]);
-      enemy.action(() => {
-        enemy.moveTo(player.pos, 80);
+  }
+  __name(showName, "showName");
+
+  // code/src/enemy.ts
+  function spawnEnemy(player) {
+    const enemy = add([
+      sprite("googoly"),
+      pos(rand(width()), rand(height())),
+      area(),
+      kaboom_default2.origin("top"),
+      "enemy"
+    ]);
+    enemy.action(() => {
+      enemy.moveTo(player.getPos(), 80);
+    });
+    enemy.collides("bullet", (b) => {
+      destroy(enemy);
+      destroy(b);
+      player.incScore();
+      kaboom_default2.addKaboom(enemy.pos);
+    });
+  }
+  __name(spawnEnemy, "spawnEnemy");
+
+  // code/src/explode.ts
+  function grow(rate) {
+    return {
+      update() {
+        const n = rate * dt();
+        this.scale.x += n;
+        this.scale.y += n;
+      }
+    };
+  }
+  __name(grow, "grow");
+  function addExplode(p, n, rad, size) {
+    for (let i = 0; i < n; i++) {
+      wait(rand(n * 0.1), () => {
+        for (let i2 = 0; i2 < 2; i2++) {
+          add([
+            pos(p.add(rand(vec2(-rad), vec2(rad)))),
+            rect(4, 4),
+            outline(4),
+            scale(1 * size, 1 * size),
+            lifespan(0.1),
+            grow(rand(48, 72) * size),
+            kaboom_default2.origin("center"),
+            fixed()
+          ]);
+        }
       });
-      enemy.collides("bullet", (b) => {
-        destroy(enemy);
-        destroy(b);
-        score += 1;
-        scoreLabel.text = score;
-        addKaboom(enemy.pos);
-      });
-      wait(rand(0.5, 1.5), spawnEnemy);
     }
-    __name(spawnEnemy, "spawnEnemy");
-    spawnEnemy();
-    setMoveAction(playedModel);
-    keyPress("space", () => {
-      spawnBullet(player.pos.sub(16, 0));
-      spawnBullet(player.pos.add(16, 0));
-    });
-    keyPress("q", () => {
-      go("end");
-    });
+  }
+  __name(addExplode, "addExplode");
+
+  // code/main.js
+  var chance2 = new import_chance.default();
+  var name = chance2.animal();
+  loadSprite("googoly", "sprites/googoly.png");
+  var mp;
+  var playerModel;
+  kaboom_default2.scene("end", () => {
+    endScene(playerModel);
+  });
+  kaboom_default2.scene("start", startScene);
+  kaboom_default2.scene("battle", () => {
+    layers([
+      "game",
+      "ui"
+    ], "game");
+    showMission();
+    const player = getPlayer("currant");
+    playerModel = new PlayerModel(name, width() / 2, height() / 2, player);
+    mp = new Multiplayer(playerModel);
+    showScoreLabel(playerModel.getScore());
+    spawnFood();
+    showName(playerModel);
+    (/* @__PURE__ */ __name(function spawner() {
+      spawnEnemy(playerModel);
+      wait(rand(1, 3), spawner);
+    }, "spawner"))();
+    setControls(playerModel);
     player.collides("food", (food) => {
       destroy(food);
       addKaboom(player.pos);
