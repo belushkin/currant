@@ -28,10 +28,6 @@ let insaneMode = false;
 
 let playerModel;
 
-k.scene("end", () => {
-	endScene(playerModel);
-});
-
 k.scene("start", startScene);
 
 k.scene("battle", () => {
@@ -80,5 +76,10 @@ k.scene("battle", () => {
 		});
 	});
 });
+
+k.scene("end", () => {
+	endScene(playerModel);
+});
+
 
 go("start");

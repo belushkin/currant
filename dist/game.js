@@ -11216,9 +11216,6 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
   loadSprite("googoly", "sprites/googoly.png");
   var mp;
   var playerModel;
-  kaboom_default2.scene("end", () => {
-    endScene(playerModel);
-  });
   kaboom_default2.scene("start", startScene);
   kaboom_default2.scene("battle", () => {
     layers([
@@ -11251,6 +11248,9 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
         go("end");
       });
     });
+  });
+  kaboom_default2.scene("end", () => {
+    endScene(playerModel);
   });
   go("start");
 })();
