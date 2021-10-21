@@ -117,31 +117,15 @@ k.scene("battle", () => {
 	}
 
   function spawnBullet(p) {
-		add([
+    add([
 			rect(12, 48),
 			area(),
 			pos(p),
 			origin("center"),
 			color(127, 127, 255),
 			outline(4),
-			move(UP, BULLET_SPEED),
+			move(mouseWorldPos().angle(player.pos), BULLET_SPEED),
 			cleanup(),
-			// strings here means a tag
-			"bullet",
-		]);
-	}
-
-  function spawnBullet(p) {
-		add([
-			rect(12, 48),
-			area(),
-			pos(p),
-			origin("center"),
-			color(127, 127, 255),
-			outline(4),
-			move(enemy.pos, BULLET_SPEED),
-			cleanup(),
-			// strings here means a tag
 			"bullet",
 		]);
 	}
@@ -241,7 +225,7 @@ k.scene("battle", () => {
 		addExplode(center(), 12, 120, 30);
 		wait(1, () => {
 			// music.stop();
-			go("battle");
+			go("end");
 		});
 	});
 

@@ -7,9 +7,8 @@ export default function getEnemy(tag) {
     sprite("googoly"),
     pos(0, 0),
     area(),
-    move(0,0),
     origin("top"),
-    tag,
+    tag
   ]);
   return enemy;
 }

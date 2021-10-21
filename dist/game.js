@@ -10487,7 +10487,6 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
       sprite("googoly"),
       pos(0, 0),
       area(),
-      move(0, 0),
       origin("top"),
       tag
     ]);
@@ -10523,6 +10522,7 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
       } else {
         playerModel.stop();
       }
+      camPos(playerModel.getPos());
     });
   }
   __name(setMoveAction, "setMoveAction");
@@ -10701,21 +10701,7 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
         origin("center"),
         color(127, 127, 255),
         outline(4),
-        move(UP, BULLET_SPEED),
-        cleanup(),
-        "bullet"
-      ]);
-    }
-    __name(spawnBullet, "spawnBullet");
-    function spawnBullet(p) {
-      add([
-        rect(12, 48),
-        area(),
-        pos(p),
-        origin("center"),
-        color(127, 127, 255),
-        outline(4),
-        move(enemy.pos, BULLET_SPEED),
+        move(mouseWorldPos().angle(player.pos), BULLET_SPEED),
         cleanup(),
         "bullet"
       ]);
@@ -10792,7 +10778,7 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
       shake(120);
       addExplode(center(), 12, 120, 30);
       wait(1, () => {
-        go("battle");
+        go("end");
       });
     });
   });
