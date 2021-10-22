@@ -28,6 +28,9 @@ export default function getHealthbar(player) {
   player.on("hurt", () => {
 		bar.set(player.hp());
 	});
+  player.on("heal", () => {
+		bar.set(player.hp());
+	});
 }
 
 

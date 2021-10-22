@@ -38,6 +38,11 @@ export default function getPlayer(tag, myself = false, god = false) {
     player.biggify(0.5);
   });
 
+  player.collides("heart", (heart) => {
+    destroy(heart);
+    player.heal(player.isInsane() ? 10 : 1);
+  });
+
   player.on("death", () => {
 		// music.stop();
 		go("end");

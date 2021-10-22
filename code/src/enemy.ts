@@ -3,7 +3,32 @@ import PlayerModel from "./playerModel";
 import big from "./components/big";
 import insane from "./components/insane";
 
-loadSprite("googoly", "sprites/googoly.png");
+const objs = [
+	{
+    sprite: "googoly",
+    health: 2
+  },
+  {
+    sprite: "gigagantrum",
+    health: 15
+  },
+  {
+    sprite: "mark",
+    health: 10
+  },
+  {
+    sprite: "onion",
+    health: 4
+  },
+  {
+    sprite: "goldfly",
+    health: 5
+  }
+];
+
+for (const obj of objs) {
+	loadSprite(obj, `sprites/${obj.sprite}.png`);
+}
 loadSprite("missile", "sprites/missile.png");
 
 const MISSILE_SPEED = 1000;
@@ -14,12 +39,13 @@ const ENEMY_INSANE_SPEED = 280;
 const ENEMY_HEALTH = 10;
 
 export default function spawnEnemy(player: PlayerModel) {
+  const enemyObj = choose(objs);
   const enemy = add([
-    sprite("googoly"),
+    sprite(enemyObj.sprite),
     pos(rand(width() * 2), rand(height() * 2)),
     area(),
     scale(1),
-    health(ENEMY_HEALTH),
+    health(enemyObj.health),
     big(),
     insane(),
     k.origin("top"),

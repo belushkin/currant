@@ -1,10 +1,16 @@
 import k from "./kaboom";
 import Chance from "chance";
-import spawnFood from "./src/food";
-import spawnCoin from "./src/coin";
+
+import spawnFood from "./src/objects/food";
+import spawnCoin from "./src/objects/coin";
+import spawnHeart from "./src/objects/heart";
+
 import getPlayer from "./src/player";
+
 import timer from "./src/ui/timer";
 import showMission from "./src/ui/mission";
+import getHealthbar from "./src/ui/healthbar";
+
 import Multiplayer from "./src/multiplayer";
 import PlayerModel from "./src/playerModel";
 import startScene from "./src/scenes/start";
@@ -16,7 +22,6 @@ import spawnEnemy from "./src/enemy";
 import showObstacles from "./src/obstacles";
 import emitter from "./src/emitter";
 import PlayerJoined from "./src/events/playerJoined";
-import getHealthbar from "./src/ui/healthbar";
 
 const chance = new Chance();
 let name = chance.animal();
@@ -45,11 +50,10 @@ k.scene("battle", () => {
 
   showScoreLabel(playerModel.getScore());
 
-  // spawn food
+  // spawn food && coin && heart
   spawnFood();
-
-  // spawn coin
   spawnCoin();
+  spawnHeart();
 
   showName(playerModel);
 
