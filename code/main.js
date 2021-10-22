@@ -78,7 +78,7 @@ k.scene("battle", () => {
   })
 
   emitter.on('enemy.spawn', (event) => {
-//    spawnEnemy(event.target, event.pos);
+    spawnEnemy(event.target, event.pos);
   });
   emitter.on('food.spawned', (event) => {
     spawnFood(event.pos, event.uuid);
