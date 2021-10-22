@@ -11027,6 +11027,9 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
     getPos() {
       return this.gameObject.pos;
     }
+    getPlayerObject() {
+      return this.gameObject;
+    }
     setScore(newScore) {
       this.score = newScore;
       this.emitScore();
@@ -11137,6 +11140,18 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
       } else {
         playerModel2.stop();
       }
+      if (playerModel2.getPos().x < 0) {
+        playerModel2.setPosition(0, playerModel2.getPos().y);
+      }
+      if (playerModel2.getPos().x > width() * 2) {
+        playerModel2.setPosition(width() * 2, playerModel2.getPos().y);
+      }
+      if (playerModel2.getPos().y > height() * 2) {
+        playerModel2.setPosition(playerModel2.getPos().x, height() * 2);
+      }
+      if (playerModel2.getPos().y < 0) {
+        playerModel2.setPosition(playerModel2.getPos().x, 0);
+      }
       camPos(playerModel2.getPos());
     });
     keyPress("space", () => {
@@ -11145,6 +11160,9 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
     });
     keyPress("q", () => {
       go("end");
+    });
+    playerModel2.getPlayerObject().collides("wall", () => {
+      shake(12);
     });
   }
   __name(setControls, "setControls");
@@ -11215,6 +11233,39 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
   }
   __name(addExplode, "addExplode");
 
+  // code/src/obstacles.js
+  function showObstacles() {
+    kaboom_default2.add([
+      pos(0, 0),
+      rect(10, height() * 2),
+      outline(4),
+      area(),
+      "wall"
+    ]);
+    kaboom_default2.add([
+      pos(0, 0),
+      rect(width() * 2, 10),
+      outline(4),
+      area(),
+      "wall"
+    ]);
+    kaboom_default2.add([
+      pos(0, height() * 2),
+      rect(width() * 2, 10),
+      outline(4),
+      area(),
+      "wall"
+    ]);
+    kaboom_default2.add([
+      pos(width() * 2, 0),
+      rect(10, height() * 2),
+      outline(4),
+      area(),
+      "wall"
+    ]);
+  }
+  __name(showObstacles, "showObstacles");
+
   // code/main.js
   var chance2 = new import_chance.default();
   var name = chance2.animal();
@@ -11227,6 +11278,7 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
       "game",
       "ui"
     ], "game");
+    showObstacles();
     showMission();
     const player = getPlayer("currant");
     playerModel = new PlayerModel(name, width() / 2, height() / 2, player);

@@ -12,6 +12,8 @@ import setControls from "./src/controls";
 import showName from "./src/ui/name";
 import spawnEnemy from "./src/enemy";
 import addExplode from "./src/explode";
+import showObstacles from "./src/obstacles";
+
 
 const chance = new Chance();
 let name = chance.animal();
@@ -37,6 +39,11 @@ k.scene("battle", () => {
 		"ui",
 	], "game");
    
+
+  // Obstacles
+  showObstacles();
+
+  // Mission
 	showMission();
 
   const player = getPlayer("currant");

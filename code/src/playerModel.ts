@@ -58,11 +58,17 @@ export default class PlayerModel {
     return this.gameObject.pos;
   }
 
+  public getPlayerObject(): Character
+  {
+    return this.gameObject;
+  }
+
   public setScore(newScore: number): void
   {
     this.score = newScore;
     this.emitScore();
   }
+
   private emitScore() {
     emitter.emit('player.score.updated', new PlayerScoreUpdated(this, this.score));
   }
