@@ -16,14 +16,12 @@ import spawnEnemy from "./src/enemy";
 import showObstacles from "./src/obstacles";
 import emitter from "./src/emitter";
 import PlayerJoined from "./src/events/playerJoined";
+import getHealthbar from "./src/ui/healthbar";
 
 const chance = new Chance();
 let name = chance.animal();
 
 let mp;
-
-let insaneMode = false;
-
 let playerModel;
 
 k.scene("start", startScene);
@@ -42,6 +40,9 @@ k.scene("battle", () => {
   playerModel = new PlayerModel(name, width() / 2, height() / 2, player);
   mp = new Multiplayer(playerModel);
 
+  // init healthbar for the player
+  const healthbar = getHealthbar(player);
+
   showScoreLabel(playerModel.getScore());
 
   // spawn food
@@ -54,6 +55,7 @@ k.scene("battle", () => {
 
   (function spawner() {
     spawnEnemy(playerModel);
+    // healthbar.set(rand(50, 1000));
     wait(rand(1, 3), spawner);
   })();
 

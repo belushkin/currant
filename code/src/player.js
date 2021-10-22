@@ -5,7 +5,7 @@ import addExplode from "./explode";
 
 loadSprite("bean", "sprites/bean.png");
 
-const PLAYER_HEALTH = 1000;
+const PLAYER_HEALTH = 100;
 
 export default function getPlayer(tag, myself = false, god = false) {
   const player = k.add([
@@ -17,6 +17,9 @@ export default function getPlayer(tag, myself = false, god = false) {
     big(),
     insane(),
     tag,
+    {
+      max: PLAYER_HEALTH
+    }
   ]);
 
   player.collides("coin", (coin) => {
@@ -30,39 +33,44 @@ export default function getPlayer(tag, myself = false, god = false) {
 		}
   });
 
-  if (myself && ! god) {
-    player.collides("food", (food) => {
-      destroy(food);
-      player.biggify(0.5);
-    });
+  player.collides("food", (food) => {
+    destroy(food);
+    player.biggify(0.5);
+  });
 
+  player.on("death", () => {
+		// music.stop();
+		go("end");
+	});
+
+  // if (myself && ! god) {
     player.collides("enemy", (e) => {
       destroy(e);
-      destroy(player);
-      shake(120);
+      player.hurt(player.isInsane() ? 10 : 1);
+      // destroy(player);
+      shake(20);
       // play("explode");
       // music.detune(-1200);
-      addExplode(center(), 12, 120, 30);
-      wait(1, () => {
-        // music.stop();
-        go("end");
-      });
+      // addExplode(center(), 12, 120, 30);
+      // wait(1, () => {
+      //   // music.stop();
+      //   go("end");
+      // });
     });
 
     player.collides("missile", (m) => {
       destroy(m);
-      destroy(player);
-      shake(120);
+      player.hurt(player.isInsane() ? 10 : 1);
+      // destroy(player);
+      shake(20);
       // play("explode");
       // music.detune(-1200);
-      wait(1, () => {
-        // music.stop();
-        go("end");
-      });
+      // wait(1, () => {
+      //   // music.stop();
+      //   go("end");
+      // });
     });
-
-
-  }
+  // }
 
   return player;
 }

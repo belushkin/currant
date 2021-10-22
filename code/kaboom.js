@@ -1,7 +1,7 @@
 import kaboom from "kaboom";
 
 export const k = kaboom({
-  background: [144, 238, 144]
+  background: [160, 160, 160]
 });
 
 export default k;
