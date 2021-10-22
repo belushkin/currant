@@ -16,6 +16,7 @@ export default function getPlayer(tag, myself = false, god = false) {
     health(PLAYER_HEALTH),
     big(),
     insane(),
+    origin('center'),
     tag,
     {
       max: PLAYER_HEALTH

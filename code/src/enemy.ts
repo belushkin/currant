@@ -23,6 +23,10 @@ const objs = [
   {
     sprite: "goldfly",
     health: 5
+  },
+  {
+    sprite: "bag",
+    health: 1
   }
 ];
 

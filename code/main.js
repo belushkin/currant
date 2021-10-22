@@ -4,6 +4,7 @@ import Chance from "chance";
 import spawnFood from "./src/objects/food";
 import spawnCoin from "./src/objects/coin";
 import spawnHeart from "./src/objects/heart";
+import spawnShelters from "./src/objects/shelter";
 
 import getPlayer from "./src/player";
 
@@ -13,6 +14,8 @@ import getHealthbar from "./src/ui/healthbar";
 
 import Multiplayer from "./src/multiplayer";
 import PlayerModel from "./src/playerModel";
+import PlayerJoined from "./src/events/playerJoined";
+
 import startScene from "./src/scenes/start";
 import endScene from "./src/scenes/end";
 import showScoreLabel from "./src/ui/score";
@@ -21,7 +24,6 @@ import showName from "./src/ui/name";
 import spawnEnemy from "./src/enemy";
 import showObstacles from "./src/obstacles";
 import emitter from "./src/emitter";
-import PlayerJoined from "./src/events/playerJoined";
 
 const chance = new Chance();
 let name = chance.animal();
@@ -54,6 +56,7 @@ k.scene("battle", () => {
   spawnFood();
   spawnCoin();
   spawnHeart();
+  spawnShelters();
 
   showName(playerModel);
 
