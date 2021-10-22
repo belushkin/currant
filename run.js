@@ -36,8 +36,6 @@ function buildGame() {
 			outfile: "dist/game.js",
 		});
 
-	  console.log('try');
-
 		buildSync({
 			bundle: true,
 			sourcemap: true,
@@ -150,9 +148,7 @@ app.use("/sounds", express.static("sounds"));
 app.use("/code", express.static("code"));
 app.use("/dist", express.static("dist"));
 
-console.log("Starting to listen");
 server.listen(port);
-console.log("Started to listen");
 
 // term output
 const red = (msg) => `\x1b[31m${msg}\x1b[0m`;
@@ -161,8 +157,8 @@ const dim = (msg) => `\x1b[2m${msg}\x1b[0m`;
 function render() {
 
 	// kaboooooom!
-	process.stdout.write("\x1b[2J");
-	process.stdout.write("\x1b[H");
+//	process.stdout.write("\x1b[2J");
+//	process.stdout.write("\x1b[H");
 	process.stdout.write("kaboom!\n");
 
 	console.log(dim("\n(tip: Cmd + S in editor refresh webview)"));

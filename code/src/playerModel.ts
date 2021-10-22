@@ -43,6 +43,11 @@ export default class PlayerModel {
     });
   }
 
+  public getMove(): Vec2
+  {
+    return this.move;
+  }
+
   public stop(): void
   {
     this.setMove(this.move.x, 0);

@@ -1,4 +1,7 @@
 import PlayerModel from "./playerModel"
+import JoinCmd from "./dto/joinCmd"
+import emitter from "./emitter";
+import PlayerJoined from "./events/playerJoined"
 
 export default class Multiplayer {
   ws: WebSocket
@@ -30,19 +33,42 @@ export default class Multiplayer {
       case 'connected':
         this.handleConnected(payload);
         break;
+      case 'player.join':
+        this.handleJoin(payload);
+        break;
     }
   }
 
   private handleConnected(cmd): void
   {
     this.uuid = cmd.user;
-    this.join(this.name)  
+    this.setName(this.name);
+    this.join();
   }
 
   onOpen(event) {
   }
 
-  join(name: string) {
+  join(): void {
+    const cmd = new JoinCmd(
+      this.myslef.getPos().x,
+      this.myslef.getPos().y,
+      this.myslef.getMove().y,
+      this.myslef.getMove().x,
+
+    );
+    this.cmd('player.join', cmd);
+  }
+
+  handleJoin(payload: any): void
+  {
+    const cmd = JoinCmd.fromPayload(payload);
+    const uuid = payload.user;
+    const name = payload ?? ''
+    emitter.emit('player.joined', new PlayerJoined(cmd, uuid, name));
+  }
+
+  setName(name: string) {
     const cmd = {
       name: name
     }

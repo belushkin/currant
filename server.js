@@ -29523,17 +29523,47 @@ var import_database = __toModule(require_database());
 // multiplayer.ts
 var import_chance = __toModule(require_chance());
 var import_ws = __toModule(require("ws"));
+
+// code/src/dto/joinCmd.ts
+var JoinCmd = class {
+  constructor(posX, posY, angle, speed) {
+    this.posX = posX;
+    this.posY = posY;
+    this.speed = speed;
+    this.angle = angle;
+  }
+  static fromPayload(payload) {
+    return new this(payload.posX, payload.posY, payload.angle, payload.speed);
+  }
+};
+
+// code/src/dto/nameCmd.ts
+var NameCmd = class {
+  constructor(name) {
+    this.name = name;
+  }
+  static fromPayload(payload) {
+    return new this(payload.name);
+  }
+};
+
+// multiplayer.ts
 function multiplayer(server2) {
   const chance2 = new import_chance.default();
   const socket = new import_ws.WebSocketServer({ server: server2, path: "/multiplayer" });
+  const players = new Map();
   console.log("Socket was open");
   socket.on("connection", (conn) => {
     const uuid = chance2.guid();
     console.log(`New connection ${uuid}`);
     let name = "";
+    players.set(uuid, {});
     send({
       commandName: "connected",
       user: uuid
+    });
+    players.forEach((player, uuid2) => {
+      send({});
     });
     broadcast({
       commandName: "newPlayer",
@@ -29552,10 +29582,13 @@ function multiplayer(server2) {
     conn.on("message", (data) => {
       console.log(`rcv: "${data}", from: ${uuid}`);
       const parsed = JSON.parse(data);
+      parsed.user = uuid;
       switch (parsed.commandName) {
         case "name":
           handleName(parsed);
           break;
+        case "player.join":
+          handleJoin(parsed);
         default:
           console.log("Unsupported cmd");
       }
@@ -29567,11 +29600,24 @@ function multiplayer(server2) {
         user: uuid
       });
     });
-    function handleName(cmd) {
-      name = cmd.name;
-      console.info(`User ${uuid} set his name to ${name}`);
-      cmd.user = uuid;
+    function handleJoin(cmd) {
+      const dto = JoinCmd.fromPayload(cmd);
+      players.set(cmd.user, {
+        posX: dto.posX,
+        posY: dto.posY,
+        speen: dto.speed,
+        moveAngle: dto.angle
+      });
       broadcast(cmd);
+    }
+    function handleName(payload) {
+      const dto = NameCmd.fromPayload(payload);
+      if (payload.user == uuid) {
+        name = dto.name;
+      }
+      players.get(payload.user).name = dto.name;
+      console.info(`User ${uuid} set his name to ${name}`);
+      broadcast(payload);
     }
   });
 }
@@ -29600,7 +29646,6 @@ function buildGame() {
       entryPoints: ["code/main.js"],
       outfile: "dist/game.js"
     });
-    console.log("try");
     (0, import_esbuild.buildSync)({
       bundle: true,
       sourcemap: true,
@@ -29700,14 +29745,10 @@ app.use("/sprites", import_express.default.static("sprites"));
 app.use("/sounds", import_express.default.static("sounds"));
 app.use("/code", import_express.default.static("code"));
 app.use("/dist", import_express.default.static("dist"));
-console.log("Starting to listen");
 server.listen(port);
-console.log("Started to listen");
 var red = (msg) => `[31m${msg}[0m`;
 var dim = (msg) => `[2m${msg}[0m`;
 function render() {
-  process.stdout.write("[2J");
-  process.stdout.write("[H");
   process.stdout.write("kaboom!\n");
   console.log(dim("\n(tip: Cmd + S in editor refresh webview)"));
   if (err) {

@@ -10909,6 +10909,35 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
   }
   __name(showMission, "showMission");
 
+  // code/src/dto/joinCmd.ts
+  var JoinCmd = class {
+    constructor(posX, posY, angle, speed) {
+      this.posX = posX;
+      this.posY = posY;
+      this.speed = speed;
+      this.angle = angle;
+    }
+    static fromPayload(payload) {
+      return new this(payload.posX, payload.posY, payload.angle, payload.speed);
+    }
+  };
+  __name(JoinCmd, "JoinCmd");
+
+  // code/src/emitter.ts
+  var import_events = __toModule(require_events());
+  var emitter = new import_events.default();
+  var emitter_default = emitter;
+
+  // code/src/events/playerJoined.ts
+  var PlayerJoined = class {
+    constructor(cmd, uuid, name2) {
+      this.data = cmd;
+      this.uuid = uuid;
+      this.name = name2;
+    }
+  };
+  __name(PlayerJoined, "PlayerJoined");
+
   // code/src/multiplayer.ts
   var Multiplayer = class {
     constructor(myslef) {
@@ -10929,15 +10958,29 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
         case "connected":
           this.handleConnected(payload);
           break;
+        case "player.join":
+          this.handleJoin(payload);
+          break;
       }
     }
     handleConnected(cmd) {
       this.uuid = cmd.user;
-      this.join(this.name);
+      this.setName(this.name);
+      this.join();
     }
     onOpen(event) {
     }
-    join(name2) {
+    join() {
+      const cmd = new JoinCmd(this.myslef.getPos().x, this.myslef.getPos().y, this.myslef.getMove().y, this.myslef.getMove().x);
+      this.cmd("player.join", cmd);
+    }
+    handleJoin(payload) {
+      const cmd = JoinCmd.fromPayload(payload);
+      const uuid = payload.user;
+      const name2 = payload != null ? payload : "";
+      emitter_default.emit("player.joined", new PlayerJoined(cmd, uuid, name2));
+    }
+    setName(name2) {
       const cmd = {
         name: name2
       };
@@ -10977,11 +11020,6 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
   }
   __name(shot, "shot");
 
-  // code/src/emitter.ts
-  var import_events = __toModule(require_events());
-  var emitter = new import_events.default();
-  var emitter_default = emitter;
-
   // code/src/events/playerScoreUpdated.ts
   var PlayerScoreUpdated = class {
     constructor(player, score) {
@@ -11017,6 +11055,9 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
       this.moveCanceler = this.gameObject.action(() => {
         this.gameObject.move(dir(angle).scale(speed));
       });
+    }
+    getMove() {
+      return this.move;
     }
     stop() {
       this.setMove(this.move.x, 0);
