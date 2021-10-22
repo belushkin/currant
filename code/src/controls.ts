@@ -29,11 +29,26 @@ export default function setControls(playerModel: PlayerModel) {
     }
 
     if (pad.len() > 0) {
-      playerModel.setMove(pad.angle(base))
+        playerModel.setMove(pad.angle(base))
     } else {
       playerModel.stop();
     }
 
+    // obstacles
+    if (playerModel.getPos().x < 0) {
+      playerModel.setPosition(0, playerModel.getPos().y);
+    }
+    if (playerModel.getPos().x > width()*2) {
+      playerModel.setPosition(width()*2, playerModel.getPos().y);
+    }
+    if (playerModel.getPos().y > height()*2) {
+      playerModel.setPosition(playerModel.getPos().x, height()*2);
+    }
+    if (playerModel.getPos().y < 0) {
+      playerModel.setPosition(playerModel.getPos().x, 0);
+    }
+
+    // center camera
     camPos(playerModel.getPos());
   });
 
@@ -50,9 +65,7 @@ export default function setControls(playerModel: PlayerModel) {
     go("end");
   });
 
-  /*
-  player.collides("wall", (food) => {
+  playerModel.getPlayerObject().collides("wall", () => {
     shake(12);
   });
-  */
 }
