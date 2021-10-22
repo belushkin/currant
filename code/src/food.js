@@ -8,7 +8,7 @@ export default function spawnFood() {
     sprite("apple"),
     scale(0.5),
     area(),
-    pos(rand(0, width()), rand(0, height())),
+    pos(rand(0, width() * 2), rand(0, height() * 2)),
     "food",
   ]);
 
