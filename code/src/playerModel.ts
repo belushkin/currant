@@ -92,4 +92,8 @@ export default class PlayerModel {
   public getScore(): number {
     return this.score;
   }
+
+  public disconnect(): void {
+    this.gameObject.destroy();
+  }
 }

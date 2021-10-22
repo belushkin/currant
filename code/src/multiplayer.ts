@@ -36,13 +36,26 @@ export default class Multiplayer {
       case 'connected':
         this.handleConnected(payload);
         break;
+      case 'disconnect':
+        this.handleDisconnect(payload);
+        break
       case 'player.join':
         this.handleJoin(payload);
         break;
       case 'player.move':
         this.hanleMove(payload);
         break;
+      default:
+        console.log('Unsupported command');
     }
+  }
+
+  private handleDisconnect(payload): void
+  {
+    const user = payload.user;
+    const pm = this.players.get(user);
+    pm.disconnect();
+    this.players.delete(user);
   }
 
   private handleConnected(cmd): void

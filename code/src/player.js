@@ -4,7 +4,7 @@ import addExplode from "./explode";
 
 loadSprite("bean", "sprites/bean.png");
 
-export default function getPlayer(tag, myself = false) {
+export default function getPlayer(tag, myself = false, god = false) {
   const player = k.add([
     sprite("bean"),
     pos(center()),
@@ -14,7 +14,7 @@ export default function getPlayer(tag, myself = false) {
     tag,
   ]);
 
-  if (myself) {
+  if (myself && ! god) {
     player.collides("food", (food) => {
       destroy(food);
       player.biggify(0.5);
