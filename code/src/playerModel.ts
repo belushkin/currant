@@ -60,8 +60,8 @@ export default class PlayerModel {
     this.setMove(this.move.x, 0);
   }
 
-  public shot(angle: number): void {
-    shot(this.getPos(), angle);
+  public shot(angle: number, speed: number): void {
+    shot(this.getPos(), angle, speed);
   }
 
   public getPos(): Vec2 {

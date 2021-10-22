@@ -1,11 +1,15 @@
 import k from "./../kaboom";
 import PlayerModel from "./playerModel";
-import big from "./big";
+import big from "./components/big";
+import insane from "./components/insane";
 
 loadSprite("googoly", "sprites/googoly.png");
 loadSprite("missile", "sprites/missile.png");
 
 const MISSILE_SPEED = 1000;
+const MISSILE_INSANE_SPEED = 1200;
+const ENEMY_SPEED = 80;
+const ENEMY_INSANE_SPEED = 280;
 
 export default function spawnEnemy(player: PlayerModel) {
   const enemy = add([
@@ -14,12 +18,16 @@ export default function spawnEnemy(player: PlayerModel) {
     area(),
     scale(1),
     big(),
+    insane(),
     k.origin("top"),
     "enemy",
   ]);
 
   enemy.action(() => {
-    enemy.moveTo(player.getPos(), 80);
+    enemy.moveTo(
+      player.getPos(),
+      enemy.isInsane() ? ENEMY_INSANE_SPEED : ENEMY_SPEED
+    );
   });
 
   enemy.collides("bullet", (b) => {
@@ -30,6 +38,11 @@ export default function spawnEnemy(player: PlayerModel) {
     k.addKaboom(enemy.pos);
   });
 
+  enemy.collides("coin", (coin) => {
+    destroy(coin);
+    enemy.insanity(1.5);
+  });
+  
   enemy.collides("food", (food) => {
     destroy(food);
     enemy.biggify(0.5);
@@ -42,7 +55,7 @@ export default function spawnEnemy(player: PlayerModel) {
         sprite("missile"),
         area(),
         pos(enemy.pos.x, enemy.pos.y),
-        move(angle, MISSILE_SPEED),
+        move(angle, enemy.isInsane() ? MISSILE_INSANE_SPEED : MISSILE_SPEED),
         cleanup(),
         "missile",
       ]);

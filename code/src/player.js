@@ -1,8 +1,11 @@
 import k from "./../kaboom";
-import big from "./big";
+import big from "./components/big";
+import insane from "./components/insane";
 import addExplode from "./explode";
 
 loadSprite("bean", "sprites/bean.png");
+
+const PLAYER_HEALTH = 1000;
 
 export default function getPlayer(tag, myself = false, god = false) {
   const player = k.add([
@@ -10,9 +13,22 @@ export default function getPlayer(tag, myself = false, god = false) {
     pos(center()),
     area(),
     scale(1),
+    health(PLAYER_HEALTH),
     big(),
+    insane(),
     tag,
   ]);
+
+  player.collides("coin", (coin) => {
+    destroy(coin);
+    player.insanity(1.5);
+  });
+  
+  action("bullet", (b) => {
+		if (player.isInsane()) {
+			b.color = rand(rgb(0, 0, 0), rgb(255, 255, 255));
+		}
+  });
 
   if (myself && ! god) {
     player.collides("food", (food) => {

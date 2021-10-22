@@ -1,4 +1,4 @@
-import k from "./../kaboom";
+import k from "./../../kaboom";
 
 BIGGIFY_SCALE = 0.2;
 

@@ -1,8 +1,7 @@
 import { Vec2 } from "kaboom";
 import k from "../kaboom";
 
-const BULLET_SPEED = 1200;
-function spawnBullet(source: Vec2, angle: number) {
+function spawnBullet(source: Vec2, angle: number, speed: number) {
   add([
     rect(12, 48),
     area(),
@@ -10,13 +9,13 @@ function spawnBullet(source: Vec2, angle: number) {
     k.origin("center"),
     color(127, 127, 255),
     outline(4),
-    move(angle, BULLET_SPEED),
+    move(angle, speed),
     cleanup(),
     "bullet",
   ]);
 }
 
-export default function shot(source: Vec2, angle: number): void {
-  spawnBullet(source.sub(16, 0), angle);
-  spawnBullet(source.add(16, 0), angle);
+export default function shot(source: Vec2, angle: number, speed: number): void {
+  spawnBullet(source.sub(16, 0), angle, speed);
+  spawnBullet(source.add(16, 0), angle, speed);
 }

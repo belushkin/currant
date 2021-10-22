@@ -1,6 +1,12 @@
 import k from "./../kaboom";
 import PlayerModel from "./playerModel";
 
+const PLAYER_SPEED = 480;
+const PLAYER_INSANE_SPEED = 780;
+
+const BULLET_SPEED = 1000;
+const BULLET_INSANE_SPEED = 1200;
+
 export default function setControls(playerModel: PlayerModel) {
   k.action(() => {
     let pad = vec2(0, 0);
@@ -28,7 +34,10 @@ export default function setControls(playerModel: PlayerModel) {
     }
 
     if (pad.len() > 0) {
-      playerModel.setMove(pad.angle(base));
+      playerModel.setMove(
+        pad.angle(base), 
+        playerModel.getPlayerObject().isInsane() ? PLAYER_INSANE_SPEED : PLAYER_SPEED
+      );
     } else {
       playerModel.stop();
     }
@@ -53,7 +62,10 @@ export default function setControls(playerModel: PlayerModel) {
 
   keyPress("space", () => {
     const angle = mouseWorldPos().angle(playerModel.getPos());
-    playerModel.shot(angle);
+    playerModel.shot(
+      angle,
+      playerModel.getPlayerObject().isInsane() ? BULLET_INSANE_SPEED : BULLET_SPEED
+    );
     // play("shoot", {
     // 	volume: 0.3,
     // 	detune: rand(-1200, 1200),
