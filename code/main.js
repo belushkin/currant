@@ -44,7 +44,7 @@ k.scene("battle", () => {
   timer();
   showMission();
 
-  const player = getPlayer("currant", true, true);
+  const player = getPlayer("currant", true, false);
   playerModel = new PlayerModel(name, width() / 2, height() / 2, player);
   mp = new Multiplayer(playerModel);
 

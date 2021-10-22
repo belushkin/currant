@@ -44,13 +44,14 @@ export default function getPlayer(tag, myself = false, god = false) {
     player.heal(player.isInsane() ? 10 : 1);
   });
 
-  player.on("death", () => {
-		// music.stop();
-		go("end");
-	});
-
 
   if (myself && ! god) {
+    player.on("death", () => {
+      // music.stop();
+      go("end");
+    });
+
+
     player.collides("enemy", (e) => {
       e.hurt(e.isInsane() ? 10 : 1);
       player.hurt(player.isInsane() ? 10 : 1);
