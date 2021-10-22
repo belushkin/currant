@@ -1,7 +1,7 @@
 import k from "./../kaboom";
 import PlayerModel from "./playerModel";
 
-export default function setControls(playerModel: PlayerModel) {
+export default function setControls(playerModel: PlayerModel, width: number, height: number) {
   k.action(() => {
     let pad = vec2(0, 0);
     const base = vec2(0, 0);
@@ -37,11 +37,11 @@ export default function setControls(playerModel: PlayerModel) {
     if (playerModel.getPos().x < 0) {
       playerModel.setPosition(0, playerModel.getPos().y);
     }
-    if (playerModel.getPos().x > width() * 2) {
-      playerModel.setPosition(width() * 2, playerModel.getPos().y);
+    if (playerModel.getPos().x > width * 2) {
+      playerModel.setPosition(width * 2, playerModel.getPos().y);
     }
-    if (playerModel.getPos().y > height() * 2) {
-      playerModel.setPosition(playerModel.getPos().x, height() * 2);
+    if (playerModel.getPos().y > height * 2) {
+      playerModel.setPosition(playerModel.getPos().x, height * 2);
     }
     if (playerModel.getPos().y < 0) {
       playerModel.setPosition(playerModel.getPos().x, 0);

@@ -4,6 +4,8 @@ import emitter from "./emitter";
 import PlayerJoined from "./events/playerJoined"
 import PlayerMove from "./events/playerMove";
 import MoveCmd from "./dto/moveCmd";
+import EnemySpawnCmd from "./dto/enemySpawnCmd";
+import EnemySpawn from "./events/enemySpawn";
 
 export default class Multiplayer {
   ws: WebSocket
@@ -44,6 +46,9 @@ export default class Multiplayer {
         break;
       case 'player.move':
         this.hanleMove(payload);
+        break;
+      case 'enemy.spawn':
+        this.handleEnemySpawn(payload);
         break;
       default:
         console.log('Unsupported command');
@@ -90,6 +95,26 @@ export default class Multiplayer {
     } else {
       console.error("No player " + user, pm);
     }
+  }
+
+  private handleEnemySpawn(payload: any): void
+  {
+    const cmd = EnemySpawnCmd.fromPayload(payload);
+
+    let player;
+    if (cmd.targetUuid == this.uuid) {
+      player = this.myslef;
+    } else {
+      player = this.players.get(cmd.targetUuid);
+    }
+
+    if (player) {
+      const event = new EnemySpawn(vec2(cmd.posX, cmd.posY), player);
+      emitter.emit('enemy.spawn', event);
+    } else {
+      console.log('Cannot spawn enemy, no player found', cmd.targetUuid);
+    }
+
   }
 
   public addPlayer(uuid: string, pm: PlayerModel): void

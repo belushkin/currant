@@ -1,16 +1,17 @@
 import k from "./../kaboom";
 import PlayerModel from "./playerModel";
 import big from "./big";
+import {Vec2} from "kaboom";
 
 loadSprite("googoly", "sprites/googoly.png");
 loadSprite("missile", "sprites/missile.png");
 
 const MISSILE_SPEED = 1000;
 
-export default function spawnEnemy(player: PlayerModel) {
+export default function spawnEnemy(player: PlayerModel, pos: Vec2) {
   const enemy = add([
     sprite("googoly"),
-    pos(rand(width() * 2), rand(height() * 2)),
+    k.pos(pos),
     area(),
     scale(1),
     big(),
@@ -41,7 +42,7 @@ export default function spawnEnemy(player: PlayerModel) {
       add([
         sprite("missile"),
         area(),
-        pos(enemy.pos.x, enemy.pos.y),
+        k.pos(enemy.pos.x, enemy.pos.y),
         move(angle, MISSILE_SPEED),
         cleanup(),
         "missile",

@@ -13,7 +13,7 @@ import showName from "./src/ui/name";
 import spawnEnemy from "./src/enemy";
 import showObstacles from "./src/obstacles";
 import emitter from "./src/emitter";
-import PlayerJoined from "./src/events/playerJoined";
+import {WORLS_WIDTH, WORLD_HEIGHT} from "./src/constants"
 
 const chance = new Chance();
 let name = chance.animal();
@@ -34,7 +34,7 @@ k.scene("battle", () => {
   layers(["game", "ui"], "game");
 
   // Obstacles
-  showObstacles();
+  showObstacles(WORLS_WIDTH, WORLD_HEIGHT);
 
   // Mission
   showMission();
@@ -49,19 +49,25 @@ k.scene("battle", () => {
   spawnFood();
 
   showName(playerModel);
-
+/*
+ // Local spawner
   (function spawner() {
     spawnEnemy(playerModel);
     wait(rand(1, 3), spawner);
   })();
+*/
 
-  setControls(playerModel);
+  setControls(playerModel, WORLS_WIDTH, WORLD_HEIGHT);
   emitter.on('player.joined', (event) => {
     const player = getPlayer(event.uuid);
     const pm = new PlayerModel(event.name, event.data.posX, event.data.posY, player);
     pm.setMove(event.data.angle, event.data.speed)
     mp.addPlayer(event.uuid, pm);
   })
+
+  emitter.on('enemy.spawn', (event) => {
+    spawnEnemy(event.target, event.pos);
+  });
 });
 
 k.scene("end", () => {

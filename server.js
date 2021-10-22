@@ -29560,11 +29560,78 @@ var MoveCmd = class {
   }
 };
 
+// code/src/server/enemy.ts
+var Enemy = class {
+  constructor(posX, posY, target) {
+    this.posX = posX;
+    this.posY = posY;
+    this.target = target;
+  }
+};
+
+// code/src/server/emenySpawner.ts
+var EnemySpawner = class {
+  constructor(players, width, height) {
+    this.players = players;
+    this.width = width;
+    this.height = height;
+  }
+  spawn() {
+    const posX = this.getRandomInt(0, this.width * 2);
+    const posY = this.getRandomInt(0, this.height * 2);
+    const enemy = new Enemy(posX, posY, this.players.get(this.getRandomKey()));
+    return enemy;
+  }
+  start(cb) {
+    if (this.players.size > 0) {
+      cb(this.spawn());
+    }
+    const interval = (Math.random() * 2 + 1) * 1e3;
+    setTimeout(() => {
+      this.start(cb);
+    }, interval);
+  }
+  getRandomKey() {
+    let keys = Array.from(this.players.keys());
+    return keys[Math.floor(Math.random() * keys.length)];
+  }
+  getRandomInt(min, max) {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min)) + min;
+  }
+};
+
+// code/src/constants.ts
+var WORLS_WIDTH = 2e3;
+var WORLD_HEIGHT = 2e3;
+
 // multiplayer.ts
 function multiplayer(server2) {
   const chance2 = new import_chance.default();
   const socket = new import_ws.WebSocketServer({ server: server2, path: "/multiplayer" });
   const players = new Map();
+  const enemies = new Map();
+  const enemySpawner = new EnemySpawner(players, WORLS_WIDTH, WORLD_HEIGHT);
+  enemySpawner.start((enemy) => {
+    enemies.set(chance2.guid(), enemy);
+    const cmd = {
+      commandName: "enemy.spawn",
+      posX: enemy.posX,
+      posY: enemy.posY,
+      targetUuid: enemy.target.uuid
+    };
+    broadcastAll(cmd);
+  });
+  function broadcastAll(data) {
+    const msg = JSON.stringify(data);
+    console.log(`bca: ${msg}`);
+    socket.clients.forEach((client) => {
+      if (client.readyState === import_ws.OPEN) {
+        client.send(msg);
+      }
+    });
+  }
   console.log("Socket was open");
   socket.on("connection", (conn) => {
     const uuid = chance2.guid();
@@ -29638,9 +29705,11 @@ function multiplayer(server2) {
     function handleJoin(cmd) {
       const dto = JoinCmd.fromPayload(cmd);
       players.set(cmd.user, {
+        name: "",
+        uuid: cmd.user,
         posX: dto.posX,
         posY: dto.posY,
-        speen: dto.speed,
+        speed: dto.speed,
         moveAngle: dto.angle
       });
       broadcast(cmd);

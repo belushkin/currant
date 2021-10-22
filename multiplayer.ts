@@ -1,10 +1,14 @@
 import http from "http";
 import Chance from "chance";
 import { OPEN, WebSocketServer } from "ws";
-import Player from "./code/server/player";
 import JoinCmd from "./code/src/dto/joinCmd";
 import NameCmd from "./code/src/dto/nameCmd";
 import MoveCmd from "./code/src/dto/moveCmd";
+import EnemySpawner from "./code/src/server/emenySpawner";
+import {WORLD_HEIGHT, WORLS_WIDTH} from "./code/src/constants";
+import Enemy from "./code/src/server/enemy";
+import EnemySpawnCmd from "./code/src/dto/enemySpawnCmd";
+import Player from "./code/src/server/player";
 
 export default function multiplayer(server: http.Server): void
 {
@@ -13,6 +17,30 @@ export default function multiplayer(server: http.Server): void
 	const socket = new WebSocketServer({ server: server, path: "/multiplayer" });
 
 	const players: Map<string, Player> = new Map();
+	const enemies: Map<string, Enemy> = new Map();
+	const enemySpawner: EnemySpawner = new EnemySpawner(players, WORLS_WIDTH, WORLD_HEIGHT);
+
+	enemySpawner.start((enemy: Enemy) => {
+		enemies.set(chance.guid(), enemy);
+		const cmd = {
+			commandName: 'enemy.spawn',
+			posX: enemy.posX,
+			posY: enemy.posY,
+			targetUuid: enemy.target.uuid,
+		}
+		broadcastAll(cmd)
+	})
+
+	function broadcastAll(data: any) {
+		const msg = JSON.stringify(data)
+		console.log(`bca: ${msg}`)
+		socket.clients.forEach((client) => {
+			if (client.readyState === OPEN) {
+				client.send(msg);
+			}
+		});
+	}
+
 
   //TODO: Store all active players
 	//
@@ -107,9 +135,11 @@ export default function multiplayer(server: http.Server): void
 		function handleJoin(cmd: any) {
 			const dto = JoinCmd.fromPayload(cmd);
 			players.set(cmd.user, {
+				name: '',
+				uuid: cmd.user,
 				posX: dto.posX,
 				posY: dto.posY,
-				speen: dto.speed,
+				speed: dto.speed,
 				moveAngle: dto.angle
 			})
 
