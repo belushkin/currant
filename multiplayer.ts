@@ -4,6 +4,7 @@ import { OPEN, WebSocketServer } from "ws";
 import Player from "./code/server/player";
 import JoinCmd from "./code/src/dto/joinCmd";
 import NameCmd from "./code/src/dto/nameCmd";
+import MoveCmd from "./code/src/dto/moveCmd";
 
 export default function multiplayer(server: http.Server): void
 {
@@ -30,9 +31,15 @@ export default function multiplayer(server: http.Server): void
 		});
 
 		players.forEach((player: Player, uuid: string) => {
-			send({
+			const joinCmd = new JoinCmd(player.posX, player.posY, player.angle, player.speed);
+			joinCmd.commandName = 'player.join';
+			joinCmd.user = uuid;
+			const nameCmd = new NameCmd(player.name);
+			nameCmd.commandName = 'name';
+			nameCmd.user = uuid;
 
-			})
+			send(joinCmd);
+			send(nameCmd);
 		})
 
 		broadcast({
@@ -67,6 +74,9 @@ export default function multiplayer(server: http.Server): void
 				case 'player.join':
 					handleJoin(parsed);
 					break;
+				case 'player.move':
+					handleMove(parsed);
+					break;
 				default:
 					console.log('Unsupported cmd');
 			}
@@ -74,11 +84,25 @@ export default function multiplayer(server: http.Server): void
 
 		conn.on("close", () => {
 			console.log(`User ${uuid} disconnected...`);
+			players.delete(uuid);
+
 			broadcast({
 				commandName: 'disconnect',
 				user: uuid
 			})
 		});
+
+		function handleMove(cmd: any) {
+			const dto = MoveCmd.fromPayload(cmd)
+			const player = players.get(cmd.user);
+			player.posX = dto.posX;
+			player.posY = dto.posY;
+			player.moveAngle = dto.angle;
+			player.speed = dto.speed;
+
+			players.set(cmd.user, player);
+			broadcast(cmd);
+		}
 
 		function handleJoin(cmd: any) {
 			const dto = JoinCmd.fromPayload(cmd);

@@ -29547,6 +29547,19 @@ var NameCmd = class {
   }
 };
 
+// code/src/dto/moveCmd.ts
+var MoveCmd = class {
+  constructor(posX, posY, angle, speed) {
+    this.posX = posX;
+    this.posY = posY;
+    this.speed = speed;
+    this.angle = angle;
+  }
+  static fromPayload(payload) {
+    return new this(payload.posX, payload.posY, payload.angle, payload.speed);
+  }
+};
+
 // multiplayer.ts
 function multiplayer(server2) {
   const chance2 = new import_chance.default();
@@ -29563,7 +29576,14 @@ function multiplayer(server2) {
       user: uuid
     });
     players.forEach((player, uuid2) => {
-      send({});
+      const joinCmd = new JoinCmd(player.posX, player.posY, player.angle, player.speed);
+      joinCmd.commandName = "player.join";
+      joinCmd.user = uuid2;
+      const nameCmd = new NameCmd(player.name);
+      nameCmd.commandName = "name";
+      nameCmd.user = uuid2;
+      send(joinCmd);
+      send(nameCmd);
     });
     broadcast({
       commandName: "newPlayer",
@@ -29589,17 +29609,32 @@ function multiplayer(server2) {
           break;
         case "player.join":
           handleJoin(parsed);
+          break;
+        case "player.move":
+          handleMove(parsed);
+          break;
         default:
           console.log("Unsupported cmd");
       }
     });
     conn.on("close", () => {
       console.log(`User ${uuid} disconnected...`);
+      players.delete(uuid);
       broadcast({
         commandName: "disconnect",
         user: uuid
       });
     });
+    function handleMove(cmd) {
+      const dto = MoveCmd.fromPayload(cmd);
+      const player = players.get(cmd.user);
+      player.posX = dto.posX;
+      player.posY = dto.posY;
+      player.moveAngle = dto.angle;
+      player.speed = dto.speed;
+      players.set(cmd.user, player);
+      broadcast(cmd);
+    }
     function handleJoin(cmd) {
       const dto = JoinCmd.fromPayload(cmd);
       players.set(cmd.user, {

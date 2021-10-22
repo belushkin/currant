@@ -1,7 +1,8 @@
-import {Character, EventCanceller, Vec2} from "kaboom";
+import { Character, EventCanceller, Vec2 } from "kaboom";
 import shot from "./shot";
 import emitter from "./emitter";
 import PlayerScoreUpdated from "./events/playerScoreUpdated";
+import PlayerMove from "./events/playerMove";
 
 export default class PlayerModel {
   private move: Vec2;
@@ -15,7 +16,7 @@ export default class PlayerModel {
   private moveCanceler: EventCanceller;
 
   constructor(name: string, x: number, y: number, player: Character) {
-    this.move = vec2(0,0);
+    this.move = vec2(0, 0);
     this.pos = vec2(x, y);
     this.gameObject = player;
     this.setPosition(x, y);
@@ -24,23 +25,30 @@ export default class PlayerModel {
     this.name = name;
   }
 
-  public setPosition(x: number, y: number): void
-  {
+  public setPosition(x: number, y: number): void {
     this.pos.x = x;
     this.pos.y = y;
     this.gameObject.moveTo(this.pos.x, this.pos.y);
   }
 
-  public setMove(angle: number, speed: number = 480): void
-  {
-    if (this.moveCanceler != undefined) { 
+  public setMove(angle: number, speed: number = 480): void {
+  
+
+    if (this.move.x == angle && this.move.y == speed) {
+      return;
+    }
+
+    if (this.moveCanceler != undefined) {
       this.moveCanceler();
     }
+
     this.move.x = angle;
     this.move.y = speed;
     this.moveCanceler = this.gameObject.action(() => {
       this.gameObject.move(dir(angle).scale(speed));
     });
+
+    emitter.emit('player.move', new PlayerMove(this, angle, speed));
   }
 
   public getMove(): Vec2
@@ -48,45 +56,40 @@ export default class PlayerModel {
     return this.move;
   }
 
-  public stop(): void
-  {
+  public stop(): void {
     this.setMove(this.move.x, 0);
   }
 
-  public shot(angle: number): void
-  {
-    shot(this.getPos(), angle)
+  public shot(angle: number): void {
+    shot(this.getPos(), angle);
   }
 
-  public getPos(): Vec2
-  {
+  public getPos(): Vec2 {
     return this.gameObject.pos;
   }
 
-  public getPlayerObject(): Character
-  {
+  public getPlayerObject(): Character {
     return this.gameObject;
   }
 
-  public setScore(newScore: number): void
-  {
+  public setScore(newScore: number): void {
     this.score = newScore;
     this.emitScore();
   }
 
   private emitScore() {
-    emitter.emit('player.score.updated', new PlayerScoreUpdated(this, this.score));
+    emitter.emit(
+      "player.score.updated",
+      new PlayerScoreUpdated(this, this.score)
+    );
   }
 
-  public incScore(): void
-  {
+  public incScore(): void {
     this.score++;
     this.emitScore();
   }
 
-  public getScore(): number
-  {
+  public getScore(): number {
     return this.score;
   }
 }
-
