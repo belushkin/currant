@@ -27,7 +27,7 @@ const objs = [
 ];
 
 for (const obj of objs) {
-	loadSprite(obj, `sprites/${obj.sprite}.png`);
+	loadSprite(obj.sprite, `sprites/${obj.sprite}.png`);
 }
 loadSprite("missile", "sprites/missile.png");
 

@@ -1,6 +1,6 @@
 import k from "./../../kaboom";
 
-loadSprite("coin", "sprites/coin.png");
+loadSprite("coin", "sprites/pizza.png");
 
 export default function spawnCoin() {
   // add food obj
