@@ -45,9 +45,8 @@ export default function getPlayer(tag, myself = false, god = false) {
 
   // if (myself && ! god) {
     player.collides("enemy", (e) => {
-      destroy(e);
+      e.hurt(e.isInsane() ? 10 : 1);
       player.hurt(player.isInsane() ? 10 : 1);
-      // destroy(player);
       shake(20);
       // play("explode");
       // music.detune(-1200);
@@ -61,7 +60,7 @@ export default function getPlayer(tag, myself = false, god = false) {
     player.collides("missile", (m) => {
       destroy(m);
       player.hurt(player.isInsane() ? 10 : 1);
-      // destroy(player);
+      addKaboom(player.pos);
       shake(20);
       // play("explode");
       // music.detune(-1200);

@@ -5,10 +5,10 @@ export default function addButton(txt: string, p: Vec2, f: () => void) {
 	const btn = k.add([
 		k.text(txt),
 		pos(p),
+    layer("ui"),
 		area({ cursor: "pointer", }),
 		scale(1),
-		k.origin("center"),
-    color(),
+		origin("center")
 	]);
 
 	btn.clicks(f);
