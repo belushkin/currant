@@ -49,7 +49,13 @@ export default class Multiplayer {
     this.cmd('name', cmd);
   }
 
-  cmd(name, payload) {
+  sendPlayerStop() {
+    this.cmd('player.stop', {
+      'position': this.myslef.getPos(),
+    });
+  }
+
+  private cmd(name: string, payload: Object) {
     payload.commandName = name;
     this.ws.send(JSON.stringify(payload))
   }

@@ -1,11 +1,12 @@
-import ws from "ws";
 import http from "http";
 import Chance from "chance";
+import { OPEN, WebSocketServer } from "ws";
 
-module.exports = (server: http.Server) => {
+export default function multiplayer(server: http.Server): void
+{
 
 	const chance = new Chance();
-	const socket = new ws.Server({ server: server, path: "/multiplayer" });
+	const socket = new WebSocketServer({ server: server, path: "/multiplayer" });
 
   //TODO: Store all active players
 	//
@@ -31,7 +32,7 @@ module.exports = (server: http.Server) => {
 
 		function broadcast(data: any) {
 			socket.clients.forEach((client) => {
-				if (client !== conn && client.readyState === ws.OPEN) {
+				if (client !== conn && client.readyState === OPEN) {
 					client.send(JSON.stringify(data));
 				}
 			});

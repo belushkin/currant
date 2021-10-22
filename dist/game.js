@@ -10943,6 +10943,11 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
       };
       this.cmd("name", cmd);
     }
+    sendPlayerStop() {
+      this.cmd("player.stop", {
+        "position": this.myslef.getPos()
+      });
+    }
     cmd(name2, payload) {
       payload.commandName = name2;
       this.ws.send(JSON.stringify(payload));

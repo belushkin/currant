@@ -1,16 +1,14 @@
 // kaboom dev server
 
-const fs = require("fs");
-const path = require("path");
-const esbuild = require("esbuild");
-const express = require("express");
-const ws = require("ws");
-const http = require("http");
-const Database = require("@replit/database");
-const multiplayer = require("./multiplayer");
+import {readFileSync, writeFileSync} from "fs";
+import {buildSync} from "esbuild";
+import express from "express";
+import {createServer} from "http";
+import Database from "@replit/database";
+import multiplayer from "./multiplayer";
 const db = new Database();
 const app = express();
-const server = http.createServer(app);
+const server = createServer(app);
 const port = process.env.PORT || 8000;
 let err = null;
 
@@ -20,16 +18,15 @@ multiplayer(server);
 // build user game
 function buildGame() {
 
-	const template = fs.readFileSync("template.html", "utf-8");
+	const template = readFileSync("template.html", "utf-8");
 	let code = "";
 
 	code += `<script src="/dist/helper.js"></script>\n`;
 	code += `<script src="/dist/game.js"></script>\n`;
 
 	try {
-
 		// build user code
-		esbuild.buildSync({
+		buildSync({
 			bundle: true,
 			sourcemap: true,
 			target: "es6",
@@ -39,7 +36,9 @@ function buildGame() {
 			outfile: "dist/game.js",
 		});
 
-		esbuild.buildSync({
+	  console.log('try');
+
+		buildSync({
 			bundle: true,
 			sourcemap: true,
 			target: "es6",
@@ -69,11 +68,11 @@ function buildGame() {
 			});
 		}
 		msg += "</pre>";
-		fs.writeFileSync("dist/index.html", msg);
+		writeFileSync("dist/index.html", msg);
 		return;
 	}
 
-	fs.writeFileSync("dist/index.html", template.replace("{{kaboom}}", code));
+	writeFileSync("dist/index.html", template.replace("{{kaboom}}", code));
 
 }
 
@@ -151,7 +150,9 @@ app.use("/sounds", express.static("sounds"));
 app.use("/code", express.static("code"));
 app.use("/dist", express.static("dist"));
 
+console.log("Starting to listen");
 server.listen(port);
+console.log("Started to listen");
 
 // term output
 const red = (msg) => `\x1b[31m${msg}\x1b[0m`;
