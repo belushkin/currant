@@ -1,8 +1,11 @@
 import k from "./../kaboom";
-import big from "./big";
+import big from "./components/big";
+import insane from "./components/insane";
 import addExplode from "./explode";
 
 loadSprite("bean", "sprites/bean.png");
+
+const PLAYER_HEALTH = 100;
 
 export default function getPlayer(tag, myself = false, god = false) {
   const player = k.add([
@@ -10,42 +13,69 @@ export default function getPlayer(tag, myself = false, god = false) {
     pos(center()),
     area(),
     scale(1),
+    health(PLAYER_HEALTH),
     big(),
+    insane(),
+    origin('center'),
     tag,
+    {
+      max: PLAYER_HEALTH
+    }
   ]);
 
-  if (myself && ! god) {
-    player.collides("food", (food) => {
-      destroy(food);
-      player.biggify(0.5);
-    });
+  player.collides("coin", (coin) => {
+    destroy(coin);
+    player.insanity(1.5);
+  });
+  
+  action("bullet", (b) => {
+		if (player.isInsane()) {
+			b.color = rand(rgb(0, 0, 0), rgb(255, 255, 255));
+		}
+  });
 
+  player.collides("food", (food) => {
+    destroy(food);
+    player.biggify(0.5);
+  });
+
+  player.collides("heart", (heart) => {
+    destroy(heart);
+    player.heal(player.isInsane() ? 10 : 1);
+  });
+
+  player.on("death", () => {
+		// music.stop();
+		go("end");
+	});
+
+
+  if (myself && ! god) {
     player.collides("enemy", (e) => {
-      destroy(e);
-      destroy(player);
-      shake(120);
+      e.hurt(e.isInsane() ? 10 : 1);
+      player.hurt(player.isInsane() ? 10 : 1);
+      shake(20);
       // play("explode");
       // music.detune(-1200);
-      addExplode(center(), 12, 120, 30);
-      wait(1, () => {
-        // music.stop();
-        go("end");
-      });
+      // addExplode(center(), 12, 120, 30);
+      // wait(1, () => {
+      //   // music.stop();
+      //   go("end");
+      // });
     });
 
     player.collides("missile", (m) => {
       destroy(m);
-      destroy(player);
-      shake(120);
+      player.hurt(player.isInsane() ? 10 : 1);
+      addKaboom(player.pos);
+      shake(20);
       // play("explode");
       // music.detune(-1200);
-      wait(1, () => {
-        // music.stop();
-        go("end");
-      });
+      // wait(1, () => {
+      //   // music.stop();
+      //   go("end");
+      // });
     });
-
-
   }
 
   return player;

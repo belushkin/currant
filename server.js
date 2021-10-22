@@ -29569,24 +29569,18 @@ var Enemy = class {
   }
 };
 
-// code/src/server/emenySpawner.ts
-var EnemySpawner = class {
+// code/src/server/spawnerAbstract.ts
+var SpawnerAbstract = class {
   constructor(players, width, height) {
     this.players = players;
     this.width = width;
     this.height = height;
   }
-  spawn() {
-    const posX = this.getRandomInt(0, this.width * 2);
-    const posY = this.getRandomInt(0, this.height * 2);
-    const enemy = new Enemy(posX, posY, this.players.get(this.getRandomKey()));
-    return enemy;
-  }
   start(cb) {
     if (this.players.size > 0) {
       cb(this.spawn());
     }
-    const interval = (Math.random() * 2 + 1) * 1e3;
+    const interval = this.getInterval();
     setTimeout(() => {
       this.start(cb);
     }, interval);
@@ -29602,6 +29596,107 @@ var EnemySpawner = class {
   }
 };
 
+// code/src/server/emenySpawner.ts
+var EnemySpawner = class extends SpawnerAbstract {
+  spawn() {
+    const posX = this.getRandomInt(0, this.width);
+    const posY = this.getRandomInt(0, this.height);
+    const enemy = new Enemy(posX, posY, this.players.get(this.getRandomKey()));
+    return enemy;
+  }
+  start(cb) {
+    if (this.players.size > 0) {
+      cb(this.spawn());
+    }
+    setTimeout(() => {
+      this.start(cb);
+    }, this.getInterval());
+  }
+  getInterval() {
+    return this.getRandomInt(1e3, 3e3);
+  }
+};
+
+// code/src/server/itemAbstract.ts
+var ItemAbstract = class {
+  constructor(posX, posY) {
+    this.posX = posX;
+    this.posY = posY;
+  }
+};
+
+// code/src/server/Food.ts
+var Food = class extends ItemAbstract {
+};
+
+// code/src/server/foodSpawner.ts
+var FoodSpawner = class extends SpawnerAbstract {
+  spawn() {
+    const posX = this.getRandomInt(0, this.width);
+    const posY = this.getRandomInt(0, this.height);
+    return new Food(posX, posY);
+  }
+  start(cb) {
+    if (this.players.size > 0) {
+      cb(this.spawn());
+    }
+    setTimeout(() => {
+      this.start(cb);
+    }, this.getInterval());
+  }
+  getInterval() {
+    return this.getRandomInt(500, 1500);
+  }
+};
+
+// code/src/server/coin.ts
+var Coin = class extends ItemAbstract {
+};
+
+// code/src/server/coinSpawner.ts
+var CoinSpawner = class extends SpawnerAbstract {
+  spawn() {
+    const posX = this.getRandomInt(0, this.width);
+    const posY = this.getRandomInt(0, this.height);
+    return new Coin(posX, posY);
+  }
+  start(cb) {
+    if (this.players.size > 0) {
+      cb(this.spawn());
+    }
+    setTimeout(() => {
+      this.start(cb);
+    }, this.getInterval());
+  }
+  getInterval() {
+    return this.getRandomInt(500, 1500);
+  }
+};
+
+// code/src/server/heart.ts
+var Heart = class extends ItemAbstract {
+};
+
+// code/src/server/heartSpawner.ts
+var HeartSpawner = class extends SpawnerAbstract {
+  spawn() {
+    const posX = this.getRandomInt(0, this.width);
+    const posY = this.getRandomInt(0, this.height);
+    return new Heart(posX, posY);
+  }
+  start(cb) {
+    if (this.players.size > 0) {
+      cb(this.spawn());
+    }
+    setTimeout(() => {
+      this.start(cb);
+    }, this.getInterval());
+  }
+  getInterval() {
+    return this.getRandomInt(500, 1500);
+  }
+};
+
 // code/src/constants.ts
 var WORLS_WIDTH = 2e3;
 var WORLD_HEIGHT = 2e3;
@@ -29612,16 +29707,62 @@ function multiplayer(server2) {
   const socket = new import_ws.WebSocketServer({ server: server2, path: "/multiplayer" });
   const players = new Map();
   const enemies = new Map();
+  const food = new Map();
+  const coins = new Map();
+  const hearts = new Map();
   const enemySpawner = new EnemySpawner(players, WORLS_WIDTH, WORLD_HEIGHT);
+  const foodSpawner = new FoodSpawner(players, WORLS_WIDTH, WORLD_HEIGHT);
+  const coinSpawner = new CoinSpawner(players, WORLS_WIDTH, WORLD_HEIGHT);
+  const heartSpawner = new HeartSpawner(players, WORLS_WIDTH, WORLD_HEIGHT);
   enemySpawner.start((enemy) => {
-    enemies.set(chance2.guid(), enemy);
+    if (enemies.size > 200)
+      return;
+    const uuid = chance2.guid();
+    enemies.set(uuid, enemy);
     const cmd = {
       commandName: "enemy.spawn",
       posX: enemy.posX,
       posY: enemy.posY,
-      targetUuid: enemy.target.uuid
+      targetUuid: enemy.target.uuid,
+      uuid
     };
     broadcastAll(cmd);
+  });
+  foodSpawner.start((item) => {
+    if (food.size > players.size * 40)
+      return;
+    const uuid = chance2.guid();
+    food.set(uuid, item);
+    broadcastAll({
+      commandName: "food.spawn",
+      posX: item.posX,
+      posY: item.posY,
+      uuid
+    });
+  });
+  coinSpawner.start((item) => {
+    if (coins.size > players.size * 20)
+      return;
+    const uuid = chance2.guid();
+    coins.set(uuid, item);
+    broadcastAll({
+      commandName: "coin.spawn",
+      posX: item.posX,
+      posY: item.posY,
+      uuid
+    });
+  });
+  heartSpawner.start((item) => {
+    if (hearts.size > players.size * 10)
+      return;
+    const uuid = chance2.guid();
+    hearts.set(uuid, item);
+    broadcastAll({
+      commandName: "heart.spawn",
+      posX: item.posX,
+      posY: item.posY,
+      uuid
+    });
   });
   function broadcastAll(data) {
     const msg = JSON.stringify(data);
@@ -29642,8 +29783,9 @@ function multiplayer(server2) {
       commandName: "connected",
       user: uuid
     });
+    console.log("Total " + players.size + " players right now");
     players.forEach((player, uuid2) => {
-      const joinCmd = new JoinCmd(player.posX, player.posY, player.angle, player.speed);
+      const joinCmd = new JoinCmd(player.posX, player.posY, player.moveAngle, player.speed);
       joinCmd.commandName = "player.join";
       joinCmd.user = uuid2;
       const nameCmd = new NameCmd(player.name);
@@ -29651,6 +29793,38 @@ function multiplayer(server2) {
       nameCmd.user = uuid2;
       send(joinCmd);
       send(nameCmd);
+      send({
+        commandName: "player.move",
+        user: uuid2,
+        posX: player.posX,
+        posY: player.posY,
+        angle: player.moveAngle,
+        speed: player.speed
+      });
+    });
+    coins.forEach((item, uuid2) => {
+      send({
+        commandName: "coin.spawn",
+        posX: item.posX,
+        posY: item.posY,
+        uuid: uuid2
+      });
+    });
+    food.forEach((item, uuid2) => {
+      send({
+        commandName: "food.spawn",
+        posX: item.posX,
+        posY: item.posY,
+        uuid: uuid2
+      });
+    });
+    hearts.forEach((item, uuid2) => {
+      send({
+        commandName: "heart.spawn",
+        posX: item.posX,
+        posY: item.posY,
+        uuid: uuid2
+      });
     });
     broadcast({
       commandName: "newPlayer",
@@ -29679,6 +29853,18 @@ function multiplayer(server2) {
           break;
         case "player.move":
           handleMove(parsed);
+          break;
+        case "coin.taken":
+          handleCoinTaken(parsed);
+          break;
+        case "food.eaten":
+          handleFoodEaten(parsed);
+          break;
+        case "heart.taken":
+          handleHeartTaken(parsed);
+          break;
+        case "game.end":
+          handleGameEnd(parsed);
           break;
         default:
           console.log("Unsupported cmd");
@@ -29721,6 +29907,20 @@ function multiplayer(server2) {
       }
       players.get(payload.user).name = dto.name;
       console.info(`User ${uuid} set his name to ${name}`);
+      broadcast(payload);
+    }
+    function handleCoinTaken(payload) {
+      coins.delete(payload.uuid);
+    }
+    function handleHeartTaken(payload) {
+      hearts.delete(payload.uuid);
+    }
+    function handleFoodEaten(payload) {
+      food.delete(payload.uuid);
+    }
+    function handleGameEnd(payload) {
+      console.log(`Player ${name} got ${payload.score} points!`);
+      players.delete(payload.user);
       broadcast(payload);
     }
   });

@@ -1,10 +1,21 @@
 import k from "./kaboom";
 import Chance from "chance";
-import spawnFood from "./src/food";
+
+import spawnFood from "./src/objects/food";
+import spawnCoin from "./src/objects/coin";
+import spawnHeart from "./src/objects/heart";
+import spawnShelters from "./src/objects/shelter";
+
 import getPlayer from "./src/player";
-import showMission from "./src/ui/showMission";
+
+import timer from "./src/ui/timer";
+import showMission from "./src/ui/mission";
+import getHealthbar from "./src/ui/healthbar";
+
 import Multiplayer from "./src/multiplayer";
 import PlayerModel from "./src/playerModel";
+import PlayerJoined from "./src/events/playerJoined";
+
 import startScene from "./src/scenes/start";
 import endScene from "./src/scenes/end";
 import showScoreLabel from "./src/ui/score";
@@ -19,13 +30,6 @@ const chance = new Chance();
 let name = chance.animal();
 
 let mp;
-
-const JULEP_SPEED = 48;
-const JULEP_HEALTH = 1000;
-const OBJ_HEALTH = 4;
-
-let insaneMode = false;
-
 let playerModel;
 
 k.scene("start", startScene);
@@ -36,23 +40,31 @@ k.scene("battle", () => {
   // Obstacles
   showObstacles(WORLS_WIDTH, WORLD_HEIGHT);
 
-  // Mission
+  // Mission & timer
+  timer();
   showMission();
 
   const player = getPlayer("currant", true, true);
   playerModel = new PlayerModel(name, width() / 2, height() / 2, player);
   mp = new Multiplayer(playerModel);
 
+  // init healthbar for the player
+  const healthbar = getHealthbar(player);
+
   showScoreLabel(playerModel.getScore());
 
-  // spawn food
-  spawnFood();
+  // spawn food && coin && heart
+//  spawnFood();
+//  spawnCoin();
+//  spawnHeart();
+  spawnShelters();
 
   showName(playerModel);
 /*
  // Local spawner
   (function spawner() {
     spawnEnemy(playerModel);
+    // healthbar.set(rand(50, 1000));
     wait(rand(1, 3), spawner);
   })();
 */
@@ -66,7 +78,18 @@ k.scene("battle", () => {
   })
 
   emitter.on('enemy.spawn', (event) => {
-    spawnEnemy(event.target, event.pos);
+//    spawnEnemy(event.target, event.pos);
+  });
+  emitter.on('food.spawned', (event) => {
+    spawnFood(event.pos, event.uuid);
+  });
+
+  emitter.on('coin.spawned', (event) => {
+    spawnCoin(event.pos, event.uuid);
+  });
+
+  emitter.on('heart.spawned', (event) => {
+    spawnHeart(event.pos, event.uuid);
   });
 });
 

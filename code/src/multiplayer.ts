@@ -1,11 +1,16 @@
 import PlayerModel from "./playerModel"
 import JoinCmd from "./dto/joinCmd"
 import emitter from "./emitter";
+import GameEnd from "./events/gameEnd";
 import PlayerJoined from "./events/playerJoined"
 import PlayerMove from "./events/playerMove";
 import MoveCmd from "./dto/moveCmd";
 import EnemySpawnCmd from "./dto/enemySpawnCmd";
 import EnemySpawn from "./events/enemySpawn";
+import FoodSpawned from "./events/foodSpawned";
+import CoinSpawned from "./events/coinSpawned";
+import HeartSpawned from "./events/heartSpawned";
+import k from "../kaboom";
 
 export default class Multiplayer {
   ws: WebSocket
@@ -29,6 +34,34 @@ export default class Multiplayer {
     this.ws.onopen = this.onOpen.bind(this);
     this.ws.onmessage = this.onMessage.bind(this);
     emitter.on('player.move', this.onPlayerMove.bind(this))
+    this.setupSelfListeners();
+  }
+
+  private setupSelfListeners() {
+    const p = this.myslef.getPlayerObject();
+    p.collides("coin", (item) => {
+      const uuid = Object.keys(item.inspect()).pop();
+      this.cmd('coin.taken', {
+        uuid: uuid,
+      })
+    })
+    p.collides("food", (item) => {
+      const uuid = Object.keys(item.inspect()).pop();
+      this.cmd('food.eaten', {
+        uuid: uuid,
+      });
+    });
+    p.collides("heart", (item) => {
+      const uuid = Object.keys(item.inspect()).pop();
+      this.cmd('heart.taken', {
+        uuid: uuid,
+      });
+    });
+    emitter.on('game.end',(event: GameEnd) => {
+      this.cmd('game.end', {score: event.score})
+      this.ws.close();
+    })
+
   }
 
   onMessage(event) {
@@ -50,8 +83,24 @@ export default class Multiplayer {
       case 'enemy.spawn':
         this.handleEnemySpawn(payload);
         break;
+      case 'food.spawn':
+        this.handleFoodSpawn(payload);
+        break;
+      case 'coin.spawn':
+        this.handleCoinSpawn(payload);
+        break;
+      case 'name':
+      case 'coin.taken':
+      case 'food.eaten':
+      case 'heart.taken':
+        // nothing to do on client
+        break;
+      case 'heart.spawn':
+        this.handleHeartSpawn(payload);
+        break;
+      case 'game.end': this.handleGameEnd(payload); break;
       default:
-        console.log('Unsupported command');
+        console.log('Unsupported command', payload.commandName);
     }
   }
 
@@ -61,6 +110,11 @@ export default class Multiplayer {
     const pm = this.players.get(user);
     pm.disconnect();
     this.players.delete(user);
+  }
+
+  private handleGameEnd(payload): void
+  {
+    
   }
 
   private handleConnected(cmd): void
@@ -97,6 +151,22 @@ export default class Multiplayer {
     }
   }
 
+  private handleCoinSpawn(payload): void
+  {
+    const event = new CoinSpawned(vec2(payload.posX, payload.posY), payload.uuid);
+    emitter.emit('coin.spawned', event);
+  }
+
+  private handleCoinTaken(payload): void
+  {
+//    k.destroy(payload.uuid);
+  }
+
+  private handleHeartSpawn(payload): void
+  {
+    const event = new HeartSpawned(vec2(payload.posX, payload.posY), payload.uuid);
+    emitter.emit('heart.spawned', event);
+  }
   private handleEnemySpawn(payload: any): void
   {
     const cmd = EnemySpawnCmd.fromPayload(payload);
@@ -114,7 +184,12 @@ export default class Multiplayer {
     } else {
       console.log('Cannot spawn enemy, no player found', cmd.targetUuid);
     }
+  }
 
+  private handleFoodSpawn(payload): void
+  {
+    const event = new FoodSpawned(vec2(payload.posX, payload.posY), payload.uuid);
+    emitter.emit('food.spawned', event);
   }
 
   public addPlayer(uuid: string, pm: PlayerModel): void

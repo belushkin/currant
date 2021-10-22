@@ -5,10 +5,15 @@ import JoinCmd from "./code/src/dto/joinCmd";
 import NameCmd from "./code/src/dto/nameCmd";
 import MoveCmd from "./code/src/dto/moveCmd";
 import EnemySpawner from "./code/src/server/emenySpawner";
+import FoodSpawner from "./code/src/server/foodSpawner";
+import CoinSpawner from "./code/src/server/coinSpawner";
+import HeartSpawner from "./code/src/server/heartSpawner";
 import {WORLD_HEIGHT, WORLS_WIDTH} from "./code/src/constants";
 import Enemy from "./code/src/server/enemy";
-import EnemySpawnCmd from "./code/src/dto/enemySpawnCmd";
+import Food from "./code/src/server/Food";
 import Player from "./code/src/server/player";
+import Coin from "./code/src/server/coin";
+import Heart from "./code/src/server/heart";
 
 export default function multiplayer(server: http.Server): void
 {
@@ -18,17 +23,68 @@ export default function multiplayer(server: http.Server): void
 
 	const players: Map<string, Player> = new Map();
 	const enemies: Map<string, Enemy> = new Map();
+	const food: Map<string, Food> = new Map();
+	const coins: Map<string, Coin> = new Map();
+	const hearts: Map<string, Heart> = new Map();
+	
 	const enemySpawner: EnemySpawner = new EnemySpawner(players, WORLS_WIDTH, WORLD_HEIGHT);
+	const foodSpawner: FoodSpawner = new FoodSpawner(players, WORLS_WIDTH, WORLD_HEIGHT);
+	const coinSpawner: CoinSpawner = new CoinSpawner(players, WORLS_WIDTH, WORLD_HEIGHT);
+	const heartSpawner: HeartSpawner = new HeartSpawner(players, WORLS_WIDTH, WORLD_HEIGHT);
 
 	enemySpawner.start((enemy: Enemy) => {
-		enemies.set(chance.guid(), enemy);
+		if (enemies.size > 200) return;
+
+		const uuid = chance.guid();
+		enemies.set(uuid, enemy);
 		const cmd = {
 			commandName: 'enemy.spawn',
 			posX: enemy.posX,
 			posY: enemy.posY,
 			targetUuid: enemy.target.uuid,
+			uuid: uuid,
 		}
 		broadcastAll(cmd)
+	})
+
+	foodSpawner.start((item: Food) => {
+		if (food.size > players.size * 40) return;
+
+		const uuid = chance.guid();
+		food.set(uuid, item);
+		broadcastAll({
+			commandName: 'food.spawn',
+			posX: item.posX,
+			posY: item.posY,
+			uuid: uuid
+		});
+
+	})
+
+	coinSpawner.start((item: Coin) => {
+		if (coins.size > players.size * 20) return;
+
+		const uuid = chance.guid();
+		coins.set(uuid, item);
+		broadcastAll({
+			commandName: 'coin.spawn',
+			posX: item.posX,
+			posY: item.posY,
+			uuid: uuid
+		});
+	})
+
+	heartSpawner.start((item: Heart) => {
+		if (hearts.size > players.size * 10) return;
+
+		const uuid = chance.guid();
+		hearts.set(uuid, item);
+		broadcastAll({
+			commandName: 'heart.spawn',
+			posX: item.posX,
+			posY: item.posY,
+			uuid: uuid
+		});
 	})
 
 	function broadcastAll(data: any) {
@@ -41,9 +97,6 @@ export default function multiplayer(server: http.Server): void
 		});
 	}
 
-
-  //TODO: Store all active players
-	//
 	console.log('Socket was open');
 
 	socket.on("connection", (conn) => {
@@ -58,8 +111,10 @@ export default function multiplayer(server: http.Server): void
 			user: uuid
 		});
 
+		console.log('Total ' + players.size + ' players right now');
+
 		players.forEach((player: Player, uuid: string) => {
-			const joinCmd = new JoinCmd(player.posX, player.posY, player.angle, player.speed);
+			const joinCmd = new JoinCmd(player.posX, player.posY, player.moveAngle, player.speed);
 			joinCmd.commandName = 'player.join';
 			joinCmd.user = uuid;
 			const nameCmd = new NameCmd(player.name);
@@ -68,7 +123,42 @@ export default function multiplayer(server: http.Server): void
 
 			send(joinCmd);
 			send(nameCmd);
+			send({
+				commandName: 'player.move',
+				user: uuid,
+				posX: player.posX,
+				posY: player.posY,
+				angle: player.moveAngle,
+				speed: player.speed
+			});
 		})
+
+		coins.forEach((item: Coin, uuid: string) => {
+			send({
+				commandName: 'coin.spawn',
+				posX: item.posX,
+				posY: item.posY,
+				uuid: uuid
+			})
+		});
+
+		food.forEach((item: Food, uuid: string) => {
+			send({
+				commandName: 'food.spawn',
+				posX: item.posX,
+				posY: item.posY,
+				uuid: uuid
+			})
+		});
+
+		hearts.forEach((item: Heart, uuid: string) => {
+			send({
+				commandName: 'heart.spawn',
+				posX: item.posX,
+				posY: item.posY,
+				uuid: uuid
+			})
+		});
 
 		broadcast({
 			commandName: "newPlayer",
@@ -96,15 +186,13 @@ export default function multiplayer(server: http.Server): void
 			parsed.user = uuid
 
 			switch (parsed.commandName) {
-				case 'name':
-					handleName(parsed);
-					break;
-				case 'player.join':
-					handleJoin(parsed);
-					break;
-				case 'player.move':
-					handleMove(parsed);
-					break;
+				case 'name':					handleName(parsed); break;
+				case 'player.join':		handleJoin(parsed); break;
+				case 'player.move':		handleMove(parsed); break;
+				case 'coin.taken':		handleCoinTaken(parsed); break;
+				case 'food.eaten':		handleFoodEaten(parsed); break;
+				case 'heart.taken':		handleHeartTaken(parsed); break;
+				case 'game.end':			handleGameEnd(parsed); break;
 				default:
 					console.log('Unsupported cmd');
 			}
@@ -159,6 +247,28 @@ export default function multiplayer(server: http.Server): void
 			broadcast(payload)
 		}
 
+		function handleCoinTaken(payload: any) {
+			coins.delete(payload.uuid);
+//			broadcast(payload);
+		}
+
+		function handleHeartTaken(payload: any) {
+			hearts.delete(payload.uuid);
+//			broadcast(payload);
+		}
+
+		function handleFoodEaten(payload: any) {
+			food.delete(payload.uuid);
+//			broadcast(payload);
+		}
+
+		function handleGameEnd(payload: any) {
+			console.log(`Player ${name} got ${payload.score} points!`);
+			players.delete(payload.user)
+			broadcast(payload);
+		}
+
 	});
 
 };
+

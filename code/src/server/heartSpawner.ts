@@ -1,16 +1,15 @@
-import Enemy from "./enemy";
+import Heart from "./heart"
 import SpawnerAbstract from "./spawnerAbstract";
 
-export default class EnemySpawner extends SpawnerAbstract<Enemy> {
-  protected spawn(): Enemy {
+export default class HeartSpawner extends SpawnerAbstract<Heart> {
+
+  protected spawn(): Heart {
     const posX = this.getRandomInt(0, this.width);
     const posY = this.getRandomInt(0, this.height)
-    const enemy = new Enemy(posX, posY, this.players.get(this.getRandomKey()));
-
-    return enemy;
+    return new Heart(posX, posY);
   }
 
-  public start(cb: (enemy: Enemy) => void): void
+  public start(cb: (item: Heart) => void): void
   {
     if (this.players.size > 0) {
       cb(this.spawn());
@@ -20,7 +19,7 @@ export default class EnemySpawner extends SpawnerAbstract<Enemy> {
 
   protected getInterval(): number
   {
-    return this.getRandomInt(1000, 3000) ;
+    return this.getRandomInt(500, 1500);
   }
 }
 
