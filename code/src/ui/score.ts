@@ -12,7 +12,9 @@ export default function showScoreLabel(initScore: number): Function {
   ]);
 
   emitter.on("player.score.updated", (event: PlayerScoreUpdated) => {
-    scoreLabel.text = event.score.toString();
+    if (event.player.own) {
+      scoreLabel.text = event.score.toString();
+    }
   });
 
   return (score: number) => {

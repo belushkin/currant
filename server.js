@@ -29866,6 +29866,9 @@ function multiplayer(server2) {
         case "game.end":
           handleGameEnd(parsed);
           break;
+        case "player.shot":
+          broadcast(parsed);
+          break;
         default:
           console.log("Unsupported cmd");
       }

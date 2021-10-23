@@ -10,12 +10,13 @@ export default class PlayerModel {
   private gameObject: Character;
   public readonly speed = 480;
   public readonly name: string;
+  public readonly own: boolean;
 
   private score: number;
 
   private moveCanceler: EventCanceller;
 
-  constructor(name: string, x: number, y: number, player: Character) {
+  constructor(name: string, x: number, y: number, player: Character, own: boolean) {
     this.move = vec2(0, 0);
     this.pos = vec2(x, y);
     this.gameObject = player;
@@ -23,6 +24,7 @@ export default class PlayerModel {
     this.setMove(0, 0);
     this.score = 0;
     this.name = name;
+    this.own = own;
   }
 
   public setPosition(x: number, y: number): void {
@@ -62,6 +64,7 @@ export default class PlayerModel {
 
   public shot(angle: number, speed: number): void {
     shot(this.getPos(), angle, speed);
+    emitter.emit('player.shot', { pos: this.getPos(), angle, speed, playerModel: this })
   }
 
   public getPos(): Vec2 {

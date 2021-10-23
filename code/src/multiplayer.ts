@@ -11,6 +11,7 @@ import FoodSpawned from "./events/foodSpawned";
 import CoinSpawned from "./events/coinSpawned";
 import HeartSpawned from "./events/heartSpawned";
 import k from "../kaboom";
+import {Vec2} from "kaboom";
 
 export default class Multiplayer {
   ws: WebSocket
@@ -62,6 +63,18 @@ export default class Multiplayer {
       this.ws.close();
     })
 
+    emitter.on('player.shot', (event) => {
+      if (event.playerModel == this.myslef) {
+        this.cmd('player.shot', {
+          posX: event.pos.x,
+          posY: event.pos.y,
+          speed: event.speed,
+          angle: event.angle,
+        });
+
+      }
+    });
+
   }
 
   onMessage(event) {
@@ -98,6 +111,10 @@ export default class Multiplayer {
       case 'heart.spawn':
         this.handleHeartSpawn(payload);
         break;
+
+      case 'player.shot':
+        this.handlePlayerShot(payload);
+        break;
       case 'game.end': this.handleGameEnd(payload); break;
       default:
         console.log('Unsupported command', payload.commandName);
@@ -114,6 +131,14 @@ export default class Multiplayer {
 
   private handleGameEnd(payload): void
   {
+  }
+
+  private handlePlayerShot(payload): void
+  {
+    const pm = this.players.get(payload.user);
+    if (pm) {
+      pm.shot(payload.angle, payload.speed);
+    }
     
   }
 

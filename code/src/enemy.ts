@@ -92,11 +92,12 @@ export default function spawnEnemy(player: PlayerModel, pos: Vec2) {
   function spawnMissile(enemy) {
     if (enemy._id !== null) {
       const angle = player.getPos().angle(enemy.pos);
+      const speed = enemy.isInsane() ? MISSILE_INSANE_SPEED : MISSILE_SPEED;
       add([
         sprite("missile"),
         area(),
         k.pos(enemy.pos.x, enemy.pos.y),
-        move(angle, enemy.isInsane() ? MISSILE_INSANE_SPEED : MISSILE_SPEED),
+        move(angle, speed),
         cleanup(),
         "missile",
       ]);

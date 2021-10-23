@@ -193,6 +193,7 @@ export default function multiplayer(server: http.Server): void
 				case 'food.eaten':		handleFoodEaten(parsed); break;
 				case 'heart.taken':		handleHeartTaken(parsed); break;
 				case 'game.end':			handleGameEnd(parsed); break;
+				case 'player.shot':   broadcast(parsed); break;
 				default:
 					console.log('Unsupported cmd');
 			}

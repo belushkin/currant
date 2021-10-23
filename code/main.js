@@ -45,7 +45,7 @@ k.scene("battle", () => {
   showMission();
 
   const player = getPlayer("currant", true, false);
-  playerModel = new PlayerModel(name, width() / 2, height() / 2, player);
+  playerModel = new PlayerModel(name, width() / 2, height() / 2, player, true);
   mp = new Multiplayer(playerModel);
 
   // init healthbar for the player
