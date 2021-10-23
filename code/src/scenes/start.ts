@@ -8,6 +8,7 @@ export default function startScene() {
 		k.origin("center"),
 		fixed(),
 	]);
+
 	addButton("Play", vec2(width() / 2, (height() / 2) + 76), () => go("battle"));
-	addButton("Exit", vec2(width() / 2, (height() / 2) + 146), () => go("end"));
+	// addButton("Exit", vec2(width() / 2, (height() / 2) + 146), () => go("end"));
 }

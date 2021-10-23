@@ -7,7 +7,7 @@ loadSprite("bean", "sprites/bean.png");
 
 const PLAYER_HEALTH = 100;
 
-export default function getPlayer(tag, myself = false, god = false) {
+export default function getPlayer(tag, myself = false, god = false, music) {
   const player = k.add([
     sprite("bean"),
     pos(center()),
@@ -47,7 +47,7 @@ export default function getPlayer(tag, myself = false, god = false) {
 
   if (myself && ! god) {
     player.on("death", () => {
-      // music.stop();
+      music.stop();
       go("end");
     });
 
@@ -56,7 +56,7 @@ export default function getPlayer(tag, myself = false, god = false) {
       e.hurt(e.isInsane() ? 10 : 1);
       player.hurt(player.isInsane() ? 10 : 1);
       shake(20);
-      // play("explode");
+      play("explode");
       // music.detune(-1200);
       // addExplode(center(), 12, 120, 30);
       // wait(1, () => {
@@ -70,7 +70,7 @@ export default function getPlayer(tag, myself = false, god = false) {
       player.hurt(player.isInsane() ? 10 : 1);
       addKaboom(player.pos);
       shake(20);
-      // play("explode");
+      play("explode");
       // music.detune(-1200);
       // wait(1, () => {
       //   // music.stop();

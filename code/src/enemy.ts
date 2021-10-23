@@ -7,15 +7,15 @@ import insane from "./components/insane";
 const objs = [
 	{
     sprite: "googoly",
-    health: 2
+    health: 3
   },
   {
     sprite: "gigagantrum",
-    health: 15
+    health: 6
   },
   {
     sprite: "mark",
-    health: 10
+    health: 1
   },
   {
     sprite: "onion",
@@ -27,7 +27,7 @@ const objs = [
   },
   {
     sprite: "bag",
-    health: 1
+    health: 2
   }
 ];
 
@@ -77,6 +77,10 @@ export default function spawnEnemy(player: PlayerModel, pos: Vec2) {
   enemy.collides("bullet", (b) => {
     enemy.hurt(enemy.isInsane() ? 10 : 1);
     destroy(b);
+    play("hit", {
+			detune: rand(-1200, 1200),
+			speed: rand(0.2, 2),
+		});
   });
 
   enemy.collides("coin", (coin) => {

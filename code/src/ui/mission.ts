@@ -36,7 +36,7 @@ export default function showMission() {
   ]);
 
   k.add([
-    text('JULEP', { size: 60 }),
+    text('JULEPS', { size: 60 }),
     pos(width()-220, 40),
     lifespan(4),
     late(2),

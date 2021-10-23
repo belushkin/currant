@@ -26,6 +26,11 @@ import showObstacles from "./src/obstacles";
 import emitter from "./src/emitter";
 import {WORLS_WIDTH, WORLD_HEIGHT} from "./src/constants"
 
+loadSound("hit", "sounds/hit.mp3");
+loadSound("shoot", "sounds/shoot.mp3");
+loadSound("explode", "sounds/explode.mp3");
+loadSound("OtherworldlyFoe", "sounds/OtherworldlyFoe.mp3");
+
 const chance = new Chance();
 let name = chance.animal();
 
@@ -37,6 +42,9 @@ k.scene("start", startScene);
 k.scene("battle", () => {
   layers(["game", "ui"], "game");
 
+  // play music
+  const music = play("OtherworldlyFoe");
+
   // Obstacles
   showObstacles(WORLS_WIDTH, WORLD_HEIGHT);
 
@@ -44,7 +52,7 @@ k.scene("battle", () => {
   timer();
   showMission();
 
-  const player = getPlayer("currant", true, false);
+  const player = getPlayer("currant", true, false, music);
   playerModel = new PlayerModel(name, width() / 2, height() / 2, player, true);
   mp = new Multiplayer(playerModel);
 

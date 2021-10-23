@@ -13,6 +13,6 @@ export default function endScene(player: PlayerModel) {
 		k.origin("center"),
 		fixed(),
 	]);
-	addButton("Start", vec2(width() / 2, (height() / 2) + 96) , () => go("battle"));
+	addButton("Play", vec2(width() / 2, (height() / 2) + 96) , () => go("battle"));
 
 }
