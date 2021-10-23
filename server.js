@@ -29924,6 +29924,16 @@ function multiplayer(server2) {
     function handleGameEnd(payload) {
       console.log(`Player ${name} got ${payload.score} points!`);
       players.delete(payload.user);
+      enemies.forEach((enemy, enemyUUID) => {
+        if (enemy.target.uuid == payload.user) {
+          broadcast({
+            commandName: "enemy.killed",
+            uuid: enemyUUID,
+            user: uuid
+          });
+          enemies.delete(enemyUUID);
+        }
+      });
       broadcast(payload);
     }
   });

@@ -43,7 +43,7 @@ const ENEMY_INSANE_SPEED = 280;
 
 const ENEMY_HEALTH = 10;
 
-export default function spawnEnemy(player: PlayerModel, pos: Vec2) {
+export default function spawnEnemy(player: PlayerModel, pos: Vec2, uuid: string) {
   const enemyObj = choose(objs);
   const enemy = add([
     k.pos(pos),
@@ -55,6 +55,7 @@ export default function spawnEnemy(player: PlayerModel, pos: Vec2) {
     insane(),
     k.origin("top"),
     "enemy",
+    uuid
   ]);
 
   enemy.action(() => {

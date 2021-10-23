@@ -96,6 +96,9 @@ export default class Multiplayer {
       case 'enemy.spawn':
         this.handleEnemySpawn(payload);
         break;
+      case 'enemy.killed':
+        this.handleEnemyKilled(payload);
+        break;
       case 'food.spawn':
         this.handleFoodSpawn(payload);
         break;
@@ -204,7 +207,7 @@ export default class Multiplayer {
     }
 
     if (player) {
-      const event = new EnemySpawn(vec2(cmd.posX, cmd.posY), player);
+      const event = new EnemySpawn(vec2(cmd.posX, cmd.posY), player, payload.uuid);
       emitter.emit('enemy.spawn', event);
     } else {
       console.log('Cannot spawn enemy, no player found', cmd.targetUuid);
@@ -220,6 +223,11 @@ export default class Multiplayer {
   public addPlayer(uuid: string, pm: PlayerModel): void
   {
     this.players.set(uuid, pm);
+  }
+
+  private handleEnemyKilled(payload) :void
+  {
+    k.destroyAll(payload.uuid);
   }
 
   handleJoin(payload: any): void

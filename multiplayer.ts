@@ -266,6 +266,16 @@ export default function multiplayer(server: http.Server): void
 		function handleGameEnd(payload: any) {
 			console.log(`Player ${name} got ${payload.score} points!`);
 			players.delete(payload.user)
+			enemies.forEach((enemy, enemyUUID) => {
+				if (enemy.target.uuid == payload.user) {
+					broadcast({
+						commandName: 'enemy.killed',
+						uuid: enemyUUID,
+						user: uuid
+					});
+					enemies.delete(enemyUUID);
+				}
+			});
 			broadcast(payload);
 		}
 
