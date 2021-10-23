@@ -8,7 +8,7 @@ export default function addButton(txt: string, p: Vec2, f: () => void) {
     layer("ui"),
 		area({ cursor: "pointer", }),
 		scale(1),
-		origin("center")
+		k.origin("center"),
 	]);
 
 	btn.clicks(f);
@@ -22,7 +22,7 @@ export default function addButton(txt: string, p: Vec2, f: () => void) {
 		btn.scale = vec2(1.2);
 	}, () => {
 		btn.scale = vec2(1);
-		btn.color = rgb(0,0,0);
+		btn.color = rgb(255,100,0);
 	});
 }
 
